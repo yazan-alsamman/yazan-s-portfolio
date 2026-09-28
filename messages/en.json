@@ -1,0 +1,229 @@
+{
+  "meta": {
+    "homeDescription": "Official website of {name}, {title}.",
+    "notFoundTitle": "Page not found",
+    "designSystemTitle": "Design system preview",
+    "ogLocale": "en_US"
+  },
+  "a11y": {
+    "skipToContent": "Skip to main content",
+    "primaryNav": "Primary",
+    "footerNav": "Site",
+    "wordmarkLabel": "{name}, Home",
+    "menuDialog": "Site menu",
+    "languageNav": "Language",
+    "themeToLight": "Switch to light theme",
+    "themeToDark": "Switch to dark theme",
+    "titleSeparator": " — "
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "projects": "Projects",
+    "experience": "Experience",
+    "skills": "Skills",
+    "certificates": "Certificates",
+    "cv": "CV",
+    "contact": "Contact",
+    "menu": "Menu",
+    "close": "Close"
+  },
+  "language": {
+    "en": "English",
+    "ar": "العربية"
+  },
+  "home": {
+    "sections": {
+      "introduction": "Introduction",
+      "selectedWork": "Selected work",
+      "expertise": "Technical expertise",
+      "experience": "Experience",
+      "credentials": "Certificates & credentials",
+      "contact": "Contact"
+    },
+    "devNotice": "Development preview — the sections below are pending verified content and are not rendered in production.",
+    "devPending": "Pending owner input"
+  },
+  "footer": {
+    "identity": "Identity",
+    "site": "Site",
+    "elsewhere": "Elsewhere",
+    "socialPending": "Social profiles pending owner confirmation",
+    "rights": "All rights reserved.",
+    "cvDownload": "Download CV (PDF)"
+  },
+  "errors": {
+    "notFoundHeading": "Page not found",
+    "notFoundBody": "The page you are looking for does not exist or has moved.",
+    "backHome": "Back to home"
+  },
+  "designSystem": {
+    "heading": "Design system",
+    "intro": "Internal preview of tokens and primitives. Not indexed and disabled in production.",
+    "colors": "Color tokens",
+    "typography": "Typography",
+    "buttons": "Buttons & links",
+    "surfaces": "Surfaces, cards & tags",
+    "layout": "Layout & dividers",
+    "media": "Media frame",
+    "motion": "Motion",
+    "sampleHeading": "Engineered systems, precisely composed",
+    "sampleBody": "Sample paragraph used only to evaluate measure, rhythm and contrast. It is not site content and never appears outside this internal preview.",
+    "primary": "Primary action",
+    "secondary": "Secondary action",
+    "ghost": "Quiet action",
+    "textLink": "Inline text link",
+    "cardTitle": "Card title",
+    "cardBody": "Card body text for layout evaluation only.",
+    "tag": "Tag",
+    "mediaCaption": "4:5 media slot — reserved aspect ratio, no layout shift",
+    "revealDemo": "Scroll-linked reveal (disabled with reduced motion)"
+  },
+  "cinematic": {
+    "skipIntro": "Skip the intro",
+    "scrollCue": "Scroll to enter",
+    "acts": {
+      "ignition": {
+        "label": "Computation",
+        "line": "Every system begins as a signal."
+      },
+      "intelligence": {
+        "label": "Intelligence",
+        "line": "Structure emerges from data."
+      },
+      "engineering": {
+        "label": "Engineering",
+        "line": "Intelligence needs a body to act."
+      },
+      "systems": {
+        "label": "Systems",
+        "line": "Software, data and machines, composed as one."
+      },
+      "human": {
+        "label": "Human intent",
+        "line": "Every system starts with a question someone chose to ask."
+      }
+    },
+    "transition": {
+      "label": "The work",
+      "line": "The person behind the systems."
+    },
+    "portraitAlt": "Portrait of {name}"
+  },
+  "pages": {
+    "common": {
+      "present": "Present",
+      "devEmpty": "Development preview — this page has no published content yet. In production it does not exist (404) and is not linked anywhere.",
+      "breadcrumb": "Breadcrumb",
+      "home": "Home",
+      "externalHint": "(opens external site)",
+      "pdf": "PDF",
+      "document": "Document"
+    },
+    "about": {
+      "title": "About",
+      "description": "About {name}, {title}: background, education and work.",
+      "education": "Education",
+      "continue": "Continue",
+      "portraitAlt": "Portrait of {name}"
+    },
+    "projects": {
+      "title": "Projects",
+      "description": "Projects by {name}, {title} — case studies with context, approach and outcomes.",
+      "lead": "Case studies of systems designed and built by {name}.",
+      "filter": "Filter by category",
+      "all": "All",
+      "count": "{count, plural, one {# project} other {# projects}}",
+      "view": "Read case study"
+    },
+    "project": {
+      "overview": "Overview",
+      "problem": "Problem",
+      "approach": "Approach",
+      "architecture": "Architecture",
+      "results": "Results",
+      "details": "Details",
+      "role": "Role",
+      "timeline": "Timeline",
+      "category": "Category",
+      "context": "Context",
+      "technologies": "Technologies",
+      "links": "Links",
+      "media": "Media",
+      "video": "Watch the video",
+      "related": "Related projects",
+      "allProjects": "All projects",
+      "contactCta": "Discuss a project"
+    },
+    "experience": {
+      "title": "Experience",
+      "description": "Professional experience of {name}, {title}.",
+      "technologies": "Technologies",
+      "projects": "Projects"
+    },
+    "skills": {
+      "title": "Skills",
+      "description": "Technical skills of {name}, {title}, linked to the projects that demonstrate them.",
+      "lead": "Each skill links to the work that demonstrates it.",
+      "evidence": "Demonstrated in"
+    },
+    "certificates": {
+      "title": "Certificates",
+      "description": "Certificates and credentials of {name}, {title}.",
+      "issued": "Issued",
+      "credentialId": "Credential ID",
+      "verify": "Verify at issuer",
+      "viewPdf": "View certificate"
+    },
+    "cv": {
+      "title": "CV",
+      "description": "Curriculum vitae of {name}, {title}.",
+      "download": "Download CV",
+      "version": "Version {version}",
+      "updated": "Updated {date}",
+      "experience": "Experience",
+      "education": "Education",
+      "skills": "Skills"
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "How to contact {name}, {title}.",
+      "lead": "Reach {name} through the channels below.",
+      "email": "Email",
+      "profiles": "Profiles"
+    },
+    "portfolio": {
+      "introduction": "Introduction",
+      "readMore": "More about {name}",
+      "selectedWork": "Selected work",
+      "allProjects": "All projects",
+      "expertise": "Technical expertise",
+      "allSkills": "All skills",
+      "experience": "Experience",
+      "allExperience": "Full experience",
+      "credentials": "Certificates & credentials",
+      "allCertificates": "All certificates",
+      "contact": "Contact",
+      "contactLead": "Start a conversation.",
+      "contactCta": "Get in touch"
+    },
+    "categories": {
+      "artificial-intelligence": "Artificial intelligence",
+      "machine-learning": "Machine learning",
+      "computer-vision": "Computer vision",
+      "robotics": "Robotics",
+      "software-engineering": "Software engineering",
+      "web": "Web",
+      "mobile": "Mobile",
+      "data": "Data",
+      "other": "Other",
+      "ai-ml": "AI & machine learning",
+      "programming": "Programming",
+      "backend": "Backend",
+      "frontend": "Frontend",
+      "devops-infrastructure": "DevOps & infrastructure",
+      "databases": "Databases",
+      "tools": "Tools"
+    }
+  }
+}

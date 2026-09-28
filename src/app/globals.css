@@ -1,0 +1,774 @@
+/* R-61: class names are detected in `src/` only. Automatic detection from the project root also
+   scanned docs/ and reports, so documentation prose could add unused utilities to public CSS. */
+@import 'tailwindcss' source('../');
+
+/* Script variant: `ar:` applies when the element's language is Arabic. */
+@custom-variant ar (&:where(:lang(ar), :lang(ar) *));
+
+/* ==========================================================================
+   Yazan Al Samman — design tokens (Phase 1)
+   Source: docs/BRAND_IDENTITY.md, docs/DESIGN_SYSTEM.md. Components consume
+   semantic tokens only; the raw brand palette is referenced here and nowhere else.
+   Refinements vs. the brand doc are documented in docs/reports/PHASE_1_REPORT.md.
+   ========================================================================== */
+
+/* ---------- 1. Raw brand palette (BRAND_IDENTITY, unchanged values) ---------- */
+:root {
+  --brand-obsidian: #07090d;
+  --brand-carbon: #0d1117;
+  --brand-graphite: #171c24;
+  --brand-steel: #2a313b;
+  --brand-mist: #b8c1cc;
+  --brand-cloud: #e8edf2;
+  --brand-white: #f7f9fb;
+  --brand-cyan: #65e6ff;
+  --brand-violet: #8c7cff;
+  --brand-signal-blue: #4ea1ff;
+  --brand-green: #67e8b0;
+  --brand-amber: #f5c451;
+
+  --brand-light-bg: #f5f7fa;
+  --brand-light-surface: #ffffff;
+  --brand-light-text: #10151c;
+  --brand-light-muted: #5f6874;
+  --brand-light-accent: #007f9a;
+  --brand-light-secondary: #6557d9;
+}
+
+/* ---------- 2. Semantic color roles — DARK (primary brand expression) ---------- */
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: var(--brand-obsidian); /* page environment */
+  --bg-raised: var(--brand-carbon); /* header/footer bands, raised planes */
+  --surface: var(--brand-graphite); /* cards, panels */
+  --fg: var(--brand-cloud); /* primary text 16.9:1 on bg */
+  --fg-strong: var(--brand-white); /* display type */
+  --fg-muted: var(--brand-mist); /* secondary text 10.9:1 on bg */
+  --line: var(--brand-steel); /* decorative hairlines (non-essential, 1.5:1) */
+  --line-strong: #636b75; /* component boundaries: 3.7:1 on bg, 3.2:1 on surface (WCAG 1.4.11) */
+  --accent: var(--brand-cyan); /* primary interactive accent */
+  --accent-text: var(--brand-cyan); /* accent used as text: 13.6:1 on bg */
+  --on-accent: var(--brand-obsidian); /* text on accent fill: 13.6:1 */
+  --accent-2: var(--brand-violet); /* secondary technology accent (sparingly) */
+  --link: var(--brand-signal-blue); /* links / selected states: 7.5:1 on bg */
+  --success: var(--brand-green);
+  --warning: var(--brand-amber);
+  --focus: var(--brand-cyan); /* focus ring: 13.6:1 against bg */
+  --scrim: rgb(7 9 13 / 0.72);
+  --header-bg: rgb(7 9 13 / 0.78);
+  --shadow-color: 0 0% 0%;
+}
+
+/* ---------- 3. Semantic color roles — LIGHT (readability mode, same language) ---------- */
+[data-theme='light'] {
+  color-scheme: light;
+  --bg: var(--brand-light-bg);
+  --bg-raised: var(--brand-light-surface);
+  --surface: var(--brand-light-surface);
+  --fg: var(--brand-light-text); /* 17.1:1 */
+  --fg-strong: var(--brand-light-text);
+  --fg-muted: var(--brand-light-muted); /* 5.3:1 */
+  --line: #d5dbe3; /* decorative hairline (derived; not in brand doc) */
+  --line-strong: #858d97; /* component boundaries: 3.1:1 on bg (derived) */
+  --accent: var(--brand-light-accent); /* fills, rings */
+  --accent-text: #007992; /* refined: #007F9A is 4.35:1 on bg; this is 4.71:1 */
+  --on-accent: #ffffff; /* 4.66:1 on accent */
+  --accent-2: var(--brand-light-secondary);
+  --link: #007992;
+  --success: #0f7a52; /* derived dark green for text on light bg */
+  --warning: #8a5a00; /* derived dark amber for text on light bg */
+  --focus: var(--brand-light-accent);
+  --scrim: rgb(16 21 28 / 0.4);
+  --header-bg: rgb(245 247 250 / 0.82);
+  --shadow-color: 215 25% 20%;
+}
+
+/* ---------- 4. Typography, rhythm, motion tokens (script-aware) ---------- */
+:root {
+  /* Font stacks (next/font sets --font-inter / --font-space-grotesk / --font-plex-arabic) */
+  --font-body-stack: var(--font-inter), var(--font-plex-arabic), ui-sans-serif, system-ui, sans-serif;
+  --font-display-stack:
+    var(--font-space-grotesk), var(--font-inter), var(--font-plex-arabic), ui-sans-serif, system-ui,
+    sans-serif;
+  --font-label-stack:
+    var(--font-space-grotesk), var(--font-inter), var(--font-plex-arabic), ui-sans-serif, sans-serif;
+
+  /* Line heights — Latin defaults */
+  --lh-display: 0.98;
+  --lh-heading: 1.1;
+  --lh-body: 1.6;
+  --lh-tight: 1.3;
+
+  /* Tracking — Latin only (Arabic is reset to 0 below: tracking breaks cursive joining) */
+  --tracking-display: -0.035em;
+  --tracking-heading: -0.02em;
+  --tracking-label: 0.16em;
+  --tracking-wordmark: 0.2em;
+  --tracking-wordmark-compact: 0.12em; /* narrow phones (< 36rem) */
+
+  /* Motion — precise, slow enough to feel deliberate (easing curves live in @theme) */
+  --duration-instant: 100ms;
+  --duration-fast: 180ms;
+  --duration-base: 280ms;
+  --duration-slow: 520ms;
+  --duration-reveal: 900ms;
+  --duration-menu: 760ms;
+
+  /* Layout */
+  --header-height: 4.5rem;
+  --gutter: clamp(1.25rem, 0.6rem + 2.8vw, 3rem);
+  --measure: 68ch;
+  --hero-min-height: min(72svh, 48rem); /* identity block; the Phase 3 scene will own this stage */
+}
+
+/* Arabic: dedicated font order, taller line-heights, no tracking/uppercase (ADR-006, I18N spec) */
+:lang(ar) {
+  --font-body-stack: var(--font-plex-arabic), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display-stack:
+    var(--font-plex-arabic), var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-label-stack: var(--font-plex-arabic), var(--font-space-grotesk), ui-sans-serif, sans-serif;
+  --lh-display: 1.3;
+  --lh-heading: 1.4;
+  --lh-body: 1.9;
+  --lh-tight: 1.55;
+  --tracking-display: 0;
+  --tracking-heading: 0;
+  --tracking-label: 0;
+  --tracking-wordmark: 0;
+  --tracking-wordmark-compact: 0;
+}
+
+/* ---------- 5. Tailwind theme mapping (tokens → utilities) ---------- */
+@theme {
+  /* Tokens only: remove Tailwind's default palette so arbitrary colors cannot creep in. */
+  --color-*: initial;
+  --font-*: initial;
+  --shadow-*: initial;
+  --breakpoint-*: initial;
+
+  /* Breakpoints: narrow phone (base) · phone · large phone · tablet · laptop · desktop · large desktop */
+  --breakpoint-xs: 22.5rem; /* 360 — below this, the header drops secondary text labels */
+  --breakpoint-sm: 36rem; /* 576 */
+  --breakpoint-md: 48rem; /* 768 */
+  --breakpoint-lg: 64rem; /* 1024 */
+  --breakpoint-xl: 80rem; /* 1280 */
+  --breakpoint-2xl: 100rem; /* 1600 */
+
+  /* Spacing base: 4px grid (DESIGN_SYSTEM) — Tailwind's numeric scale multiplies this */
+  --spacing: 0.25rem;
+
+  /* Content widths */
+  --container-page: 90rem; /* 1440 content frame inside gutters */
+  --container-prose: 42rem; /* ~68ch reading measure */
+
+  /* Radii (DESIGN_SYSTEM) */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+
+  /* Fluid type scale */
+  --text-display: clamp(2.75rem, 1.35rem + 6.2vw, 7.25rem);
+  --text-h1: clamp(2.25rem, 1.45rem + 3.4vw, 4.5rem);
+  --text-h2: clamp(1.75rem, 1.3rem + 1.9vw, 3rem);
+  --text-h3: clamp(1.3125rem, 1.15rem + 0.7vw, 1.75rem);
+  --text-lead: clamp(1.125rem, 1.04rem + 0.38vw, 1.375rem);
+  --text-body: 1rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+  --text-label: 0.75rem;
+  --text-nav: 0.875rem;
+  --text-wordmark: 0.8125rem;
+  --text-menu: clamp(2rem, 1.2rem + 4vw, 3.25rem);
+
+  /* Easing (also emitted as :root variables for component CSS) */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-raised: var(--bg-raised);
+  --color-surface: var(--surface);
+  --color-fg: var(--fg);
+  --color-fg-strong: var(--fg-strong);
+  --color-fg-muted: var(--fg-muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-text: var(--accent-text);
+  --color-on-accent: var(--on-accent);
+  --color-accent-2: var(--accent-2);
+  --color-link: var(--link);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-focus: var(--focus);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --font-body: var(--font-body-stack);
+  --font-display: var(--font-display-stack);
+  --font-label: var(--font-label-stack);
+
+  /* Script-aware leading/tracking for the type scale (resolved per element → Arabic-safe) */
+  --text-display--line-height: var(--lh-display);
+  --text-display--letter-spacing: var(--tracking-display);
+  --text-h1--line-height: var(--lh-heading);
+  --text-h1--letter-spacing: var(--tracking-heading);
+  --text-h2--line-height: var(--lh-heading);
+  --text-h2--letter-spacing: var(--tracking-heading);
+  --text-h3--line-height: var(--lh-tight);
+  --text-lead--line-height: var(--lh-body);
+  --text-body--line-height: var(--lh-body);
+  --text-sm--line-height: var(--lh-body);
+  --text-label--line-height: var(--lh-tight);
+  --text-label--letter-spacing: var(--tracking-label);
+  --text-nav--line-height: var(--lh-tight);
+  --text-menu--line-height: var(--lh-heading);
+  --text-menu--letter-spacing: var(--tracking-heading);
+
+  --shadow-raised:
+    0 1px 0 0 hsl(var(--shadow-color) / 0.04), 0 12px 32px -12px hsl(var(--shadow-color) / 0.45);
+  --shadow-overlay: 0 24px 64px -16px hsl(var(--shadow-color) / 0.6);
+}
+
+/* ---------- 6. Z-index layers (single source) ---------- */
+:root {
+  --z-base: 0;
+  --z-raised: 10;
+  --z-header: 50;
+  --z-menu: 70;
+  --z-skip-link: 100;
+}
+
+/* ---------- 7. Base ---------- */
+@layer base {
+  html {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body-stack);
+    font-size: 100%;
+    line-height: var(--lh-body);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Anchors and focused elements are never hidden beneath the sticky header. */
+    scroll-padding-block-start: calc(var(--header-height) + 1rem);
+  }
+
+  body {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: clip; /* guard against accidental horizontal overflow; never hides content vertically */
+  }
+
+  main {
+    flex: 1 0 auto;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--on-accent);
+  }
+
+  /* Visible, high-contrast focus for keyboard users only (WCAG 2.4.7; ≥2px, ≥3:1). */
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  img,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  :where(h1, h2, h3, h4) {
+    text-wrap: balance;
+  }
+
+  :where(p) {
+    text-wrap: pretty;
+  }
+}
+
+/* Arabic never receives letter-spacing or case transforms (unlayered: beats utilities). */
+:lang(ar) {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ---------- 8. Motion foundation ---------- */
+@layer components {
+  /* Scroll-linked reveal — progressive enhancement, content is visible without support. */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .reveal {
+        animation: reveal-rise linear both;
+        animation-timeline: view();
+        animation-range: entry 5% cover 28%;
+      }
+    }
+  }
+}
+
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* Global reduced-motion contract — the same contract the Phase 3 scene will honor. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0.01ms;
+    --duration-base: 0.01ms;
+    --duration-slow: 0.01ms;
+    --duration-reveal: 0.01ms;
+    --duration-menu: 0.01ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- 9. Shell components (CSS-only behaviour, zero JS) ---------- */
+@layer components {
+  /* Header: transparent over the page, solidifies on scroll via a scroll-driven animation.
+     Pattern adapted from 21st.dev "Header 1" (efferd) — JS scroll listener replaced by CSS. */
+  .site-header {
+    background-color: var(--header-bg);
+    border-block-end: 1px solid var(--line);
+    backdrop-filter: blur(14px) saturate(140%);
+  }
+  @supports (animation-timeline: scroll()) {
+    /* Phase 8: the blur + tint live on a layer whose OPACITY is scroll-animated (compositor-only).
+       Animating the backdrop blur itself kept Chrome repainting the page every frame after the range
+       ended (~330 paints/s at rest, ~25 % renderer + ~30 % GPU-process CPU). Same end states. */
+    .site-header {
+      background-color: transparent;
+      backdrop-filter: none;
+      isolation: isolate;
+      animation: header-border linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 6rem;
+    }
+    .site-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-color: var(--header-bg);
+      backdrop-filter: blur(14px) saturate(140%);
+      animation: header-solidify linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 6rem;
+    }
+  }
+
+  /* Underline that grows from the inline-start edge (mirrors automatically in RTL). */
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition: background-size var(--duration-base) var(--ease-emphasized);
+  }
+  :dir(rtl) .link-underline {
+    background-position: 100% 100%;
+  }
+  .link-underline:hover,
+  .link-underline:focus-visible,
+  :is(a, button):hover > .link-underline,
+  :is(a, button):focus-visible > .link-underline,
+  [aria-current='page'] > .link-underline {
+    background-size: 100% 1px;
+  }
+
+  /* Text "roll" on hover — adapted from 21st.dev "Immersive Full Screen Navigation"
+     (hyperiux). Per-character split replaced by whole-label roll: splitting would
+     break Arabic letter shaping, and the whole-label version reads identically in both scripts. */
+  .text-roll {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    line-height: 1.1;
+    padding-block: 0.02em;
+  }
+  .text-roll > span {
+    display: inline-block;
+    text-shadow: 0 1.2em currentColor;
+    transition: translate var(--duration-slow) var(--ease-emphasized);
+  }
+  :is(a, button):hover > .text-roll > span,
+  :is(a, button):focus-visible > .text-roll > span {
+    translate: 0 -1.2em;
+  }
+
+  /* Precision rule: hairline with measured end ticks — the "engineered" signature detail. */
+  .rule-measured {
+    position: relative;
+    block-size: 1px;
+    background-color: var(--line);
+  }
+  .rule-measured::before,
+  .rule-measured::after {
+    content: '';
+    position: absolute;
+    inset-block-start: -4px;
+    block-size: 9px;
+    inline-size: 1px;
+    background-color: var(--line-strong);
+  }
+  .rule-measured::before {
+    inset-inline-start: 0;
+  }
+  .rule-measured::after {
+    inset-inline-end: 0;
+  }
+
+  /* Full-screen menu (native <dialog>) — clip-path wipe from the inline-end edge.
+     Adapted from 21st.dev "Immersive Full Screen Navigation": GSAP timeline replaced by
+     CSS transitions + @starting-style; focus trap/Esc/focus-return provided natively by <dialog>. */
+  .menu-dialog {
+    position: fixed;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100dvh;
+    max-inline-size: none;
+    max-block-size: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background-color: var(--bg);
+    color: var(--fg);
+    overflow-y: auto;
+    z-index: var(--z-menu);
+    clip-path: inset(0 0 0 100%);
+    transition:
+      clip-path var(--duration-menu) var(--ease-emphasized),
+      overlay var(--duration-menu) allow-discrete,
+      display var(--duration-menu) allow-discrete;
+  }
+  :dir(rtl) .menu-dialog,
+  .menu-dialog:dir(rtl) {
+    clip-path: inset(0 100% 0 0);
+  }
+  .menu-dialog[open] {
+    clip-path: inset(0 0 0 0);
+  }
+  @starting-style {
+    .menu-dialog[open] {
+      clip-path: inset(0 0 0 100%);
+    }
+    .menu-dialog[open]:dir(rtl) {
+      clip-path: inset(0 100% 0 0);
+    }
+  }
+  /* Lock page scroll while the modal menu is open (CSS-only). */
+  html:has(.menu-dialog[open]) {
+    overflow: hidden;
+  }
+  .menu-dialog::backdrop {
+    background: transparent;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .menu-dialog[open] .menu-item {
+      animation: menu-item-in var(--duration-slow) var(--ease-emphasized) both;
+      animation-delay: calc(260ms + var(--i, 0) * 55ms);
+    }
+  }
+}
+
+@keyframes header-solidify {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes header-border {
+  from {
+    border-block-end-color: transparent;
+  }
+  to {
+    border-block-end-color: var(--line);
+  }
+}
+
+@keyframes menu-item-in {
+  from {
+    opacity: 0;
+    translate: 0 0.6em;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* ---------- 10. Cinematic landing (Phase 3) ----------
+   Layers: .cine-stage (sticky, dark, aria-hidden: static composition + optional WebGL canvas)
+   and .cine-chapters (HTML copy, pulled up over the stage). Chapter heights come from the
+   shared timeline (--act-length, in viewport heights) so text and scene stay in step. */
+@layer components {
+  .cine {
+    /* The page theme's background, captured before the stage forces the dark theme. */
+    --page-bg: var(--bg);
+    position: relative;
+    isolation: isolate;
+    /* The stage colour on the section itself, so the copy has a dark backdrop in every theme
+       (and contrast tools see it: the sticky stage is a sibling, not an ancestor, of the copy). */
+    background-color: var(--brand-obsidian);
+  }
+  .cine-stage {
+    position: sticky;
+    inset-block-start: 0;
+    block-size: 100svh;
+    overflow: hidden;
+    background-color: var(--bg);
+    z-index: var(--z-base);
+  }
+  .cine-canvas canvas {
+    display: block;
+    touch-action: pan-y; /* never capture vertical scroll on touch devices */
+  }
+  .cine-chapters {
+    position: relative;
+    z-index: var(--z-raised);
+    margin-block-start: -100svh;
+    color: var(--fg);
+    /* Keeps copy legible as it scrolls across bright scene elements (metal highlights). */
+    text-shadow: 0 1px 18px rgb(7 9 13 / 0.75);
+  }
+  .cine-chapter {
+    min-block-size: calc(var(--act-length, 1) * 100svh);
+    block-size: calc(var(--act-length, 1) * 100svh);
+    display: flex;
+    flex-direction: column;
+  }
+  .cine-chapter > * {
+    flex: 1 1 auto;
+  }
+  .cine-arrival > * {
+    flex: none; /* the identity block sits in the first viewport, not at the chapter's end */
+  }
+  .cine-copy {
+    position: relative;
+  }
+  /* Phones: copy sits in the lower third over a soft scrim; the subject owns the upper frame. */
+  @media (width < 64rem) {
+    .cine-chapter:not(.cine-arrival) > * {
+      align-items: flex-end;
+      padding-block-end: 14svh;
+    }
+    .cine-copy::before {
+      content: '';
+      position: absolute;
+      inset: -4rem calc(var(--gutter) * -1);
+      z-index: -1;
+      background: linear-gradient(
+        to top,
+        transparent,
+        rgb(7 9 13 / 0.78) 22%,
+        rgb(7 9 13 / 0.6) 70%,
+        transparent
+      );
+      pointer-events: none;
+    }
+  }
+  .cine-transition {
+    background: linear-gradient(to bottom, transparent 55%, var(--page-bg));
+  }
+  .cine-identity {
+    overflow-wrap: anywhere;
+  }
+
+  /* Static composition — the base layer (first paint, reduced motion, no WebGL, failure). */
+  .cine-static {
+    background:
+      radial-gradient(60% 55% at 72% 34%, rgb(78 161 255 / 0.12), transparent 70%),
+      radial-gradient(45% 45% at 22% 62%, rgb(140 124 255 / 0.08), transparent 72%), var(--bg);
+    transition: opacity var(--duration-reveal) var(--ease-standard);
+  }
+  .cine-static-floor {
+    position: absolute;
+    inset-inline: -20%;
+    inset-block: 54% -10%;
+    background-image:
+      linear-gradient(to right, rgb(42 49 59 / 0.7) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(42 49 59 / 0.7) 1px, transparent 1px);
+    background-size: 64px 64px;
+    transform: perspective(600px) rotateX(62deg);
+    transform-origin: 50% 0;
+    mask-image: linear-gradient(to bottom, #000, transparent 85%);
+  }
+  .cine-static-horizon {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 54%;
+    block-size: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgb(101 230 255 / 0.55) 30%,
+      rgb(140 124 255 / 0.4) 70%,
+      transparent
+    );
+  }
+  .cine-static-glow {
+    position: absolute;
+    inset-inline: 20%;
+    inset-block: calc(54% - 6rem) calc(46% - 1px);
+    background: radial-gradient(50% 100% at 50% 100%, rgb(101 230 255 / 0.1), transparent 70%);
+  }
+  [data-cinematic='webgl'] .cine-static {
+    opacity: 0;
+  }
+
+  /* HTML portrait: cropped by CSS (hand at the bottom-right edge of the source excluded),
+     never enlarged beyond the source's intrinsic width. */
+  .cine-portrait-fallback {
+    inline-size: min(100%, 20rem);
+    transition: opacity var(--duration-reveal) var(--ease-standard);
+  }
+  .cine-portrait-crop {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 506 / 582;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line);
+  }
+  .cine-portrait-img {
+    position: absolute;
+    inset-block-start: 0;
+    left: 0;
+    inline-size: calc(100% / 0.94);
+    max-inline-size: none;
+  }
+  /* The scene shows the portrait: the image leaves the layout but stays in the accessibility
+     tree (visually-hidden pattern). The chapter height is fixed, so nothing below moves. */
+  [data-cinematic='webgl'] .cine-portrait-fallback {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .cine-cue::after {
+    content: '';
+    display: inline-block;
+    inline-size: 3rem;
+    block-size: 1px;
+    margin-inline-start: 1rem;
+    vertical-align: middle;
+    background: linear-gradient(to right, var(--accent), transparent);
+  }
+  :dir(rtl) .cine-cue::after {
+    background: linear-gradient(to left, var(--accent), transparent);
+  }
+}
+
+/* ---------- 11. Rendered CMS rich text (Phase 4) ----------
+   Editorial reading rhythm for Lexical content rendered server-side (RichText.tsx).
+   Tokens only; logical properties so lists and quotes mirror in RTL. */
+@layer components {
+  .rich-text {
+    max-inline-size: var(--measure);
+    color: var(--fg);
+  }
+  .rich-text > * + * {
+    margin-block-start: 1.1em;
+  }
+  .rich-text :where(h2, h3, h4, h5, h6) {
+    font-family: var(--font-display-stack);
+    font-weight: 500;
+    line-height: var(--lh-heading);
+    color: var(--fg-strong);
+    margin-block-start: 1.8em;
+  }
+  .rich-text h2 {
+    font-size: var(--text-h2);
+  }
+  .rich-text h3 {
+    font-size: var(--text-h3);
+  }
+  .rich-text :where(h4, h5, h6) {
+    font-size: var(--text-lead);
+  }
+  .rich-text a {
+    color: var(--link);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    transition: color var(--duration-base) var(--ease-standard);
+  }
+  .rich-text a:hover {
+    color: var(--fg-strong);
+  }
+  .rich-text :where(ul, ol) {
+    padding-inline-start: 1.25em;
+  }
+  .rich-text ul {
+    list-style: square;
+  }
+  .rich-text ol {
+    list-style: decimal;
+  }
+  .rich-text li + li {
+    margin-block-start: 0.4em;
+  }
+  .rich-text li::marker {
+    color: var(--accent-text);
+  }
+  .rich-text blockquote {
+    border-inline-start: 2px solid var(--accent);
+    padding-inline-start: 1.25em;
+    color: var(--fg-muted);
+  }
+  .rich-text code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.9em;
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    background: var(--surface);
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+  .rich-text hr {
+    border: 0;
+    block-size: 1px;
+    background: var(--line);
+  }
+  .rich-text figure img {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line);
+  }
+}

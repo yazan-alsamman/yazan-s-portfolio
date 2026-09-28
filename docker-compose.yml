@@ -1,0 +1,26 @@
+# Local development services for the Yazan Al Samman portfolio (Phase 2).
+# Isolated compose project: own container, own named volume, bound to 127.0.0.1 only.
+# Credentials come from the git-ignored `.env` (see .env.example). Never commit real values.
+name: yazan-portfolio
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: yazan-portfolio-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-yazan_portfolio}
+      POSTGRES_USER: ${POSTGRES_USER:-yazan_portfolio}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - '127.0.0.1:${POSTGRES_PORT:-5439}:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  pgdata:

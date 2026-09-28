@@ -1,0 +1,18 @@
+# Normalize line endings: Windows development, Linux VPS production.
+* text=auto eol=lf
+
+# Binary assets
+*.jpg  binary
+*.jpeg binary
+*.png  binary
+*.webp binary
+*.avif binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.glb  binary
+*.ktx2 binary
+*.enc  binary

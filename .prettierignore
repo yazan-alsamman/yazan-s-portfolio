@@ -1,0 +1,17 @@
+# Specification and reports are hand-authored documents — never reformat them.
+docs/
+prompts/
+README.md
+pnpm-lock.yaml
+.next/
+node_modules/
+coverage/
+playwright-report/
+test-results/
+src/fonts/
+
+# Payload-generated artifacts (kept identical to generator output)
+src/migrations/
+src/payload-types.ts
+src/app/(payload)/admin/importMap.js
+media/

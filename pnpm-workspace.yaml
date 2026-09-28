@@ -1,0 +1,11 @@
+# Dependency install-script policy (pnpm 11 blocks lifecycle scripts by default).
+# Denied deliberately — verified unnecessary for this project:
+#   @swc/core, @parcel/watcher — pulled in by next-intl's optional message extractor (unused).
+#   unrs-resolver             — native binary ships via optionalDependencies; postinstall not required.
+#   esbuild                   — (drizzle-kit via @payloadcms/db-postgres, vite via vitest) platform binary
+#                               ships via optional @esbuild/* packages; all three versions verified working.
+allowBuilds:
+  '@swc/core': false
+  '@parcel/watcher': false
+  unrs-resolver: false
+  esbuild: false

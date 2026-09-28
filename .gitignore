@@ -1,0 +1,76 @@
+# --- Secrets / environment -------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+.git-credentials
+.npmrc
+.netrc
+
+# --- Dependencies (pnpm / node) --------------------------------------------
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
+
+# --- Next.js / build output --------------------------------------------------
+.next/
+out/
+dist/
+build/
+next-env.d.ts
+*.tsbuildinfo
+.turbo/
+
+# --- Payload CMS -------------------------------------------------------------
+# Uploaded media is runtime data (backed up separately, ADR-004/009), never source.
+/media/
+/uploads/
+# Payload generated files are regenerated from config; the types file is committed on purpose:
+# src/payload-types.ts  (keep tracked)
+
+# --- Database / backups (VPS) -----------------------------------------------
+*.sql
+*.sql.gz
+*.dump
+/backups/
+/docker/data/
+/pgdata/
+
+# --- Testing ----------------------------------------------------------------
+coverage/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+.lighthouseci/
+
+# --- Logs --------------------------------------------------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+
+# --- OS / editors -------------------------------------------------------------
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# --- Local agent / tool state ------------------------------------------------
+.claude/settings.local.json
+
+# --- Generated image derivatives (produced by the media pipeline, Phase 6) ----
+/public/_generated/
+
+# --- Owner private photos (never published) ----------------------------------
+/photos/

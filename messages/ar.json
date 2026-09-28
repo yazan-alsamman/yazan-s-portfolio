@@ -1,0 +1,229 @@
+{
+  "meta": {
+    "homeDescription": "الموقع الرسمي لـ{name}، {title}.",
+    "notFoundTitle": "الصفحة غير موجودة",
+    "designSystemTitle": "معاينة نظام التصميم",
+    "ogLocale": "ar_AR"
+  },
+  "a11y": {
+    "skipToContent": "انتقل إلى المحتوى الرئيسي",
+    "primaryNav": "التنقل الرئيسي",
+    "footerNav": "روابط الموقع",
+    "wordmarkLabel": "{name}، الصفحة الرئيسية",
+    "menuDialog": "قائمة الموقع",
+    "languageNav": "اللغة",
+    "themeToLight": "التبديل إلى الوضع الفاتح",
+    "themeToDark": "التبديل إلى الوضع الداكن",
+    "titleSeparator": " — "
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "about": "نبذة",
+    "projects": "المشاريع",
+    "experience": "الخبرات",
+    "skills": "المهارات",
+    "certificates": "الشهادات",
+    "cv": "السيرة الذاتية",
+    "contact": "تواصل",
+    "menu": "القائمة",
+    "close": "إغلاق"
+  },
+  "language": {
+    "en": "English",
+    "ar": "العربية"
+  },
+  "home": {
+    "sections": {
+      "introduction": "مقدمة",
+      "selectedWork": "أعمال مختارة",
+      "expertise": "الخبرة التقنية",
+      "experience": "الخبرات المهنية",
+      "credentials": "الشهادات والاعتمادات",
+      "contact": "تواصل"
+    },
+    "devNotice": "معاينة تطوير — الأقسام التالية بانتظار محتوى موثّق ولا تظهر في النسخة المنشورة.",
+    "devPending": "بانتظار مدخلات المالك"
+  },
+  "footer": {
+    "identity": "الهوية",
+    "site": "الموقع",
+    "elsewhere": "روابط أخرى",
+    "socialPending": "الحسابات الاجتماعية بانتظار تأكيد المالك",
+    "rights": "جميع الحقوق محفوظة.",
+    "cvDownload": "تنزيل السيرة الذاتية (PDF)"
+  },
+  "errors": {
+    "notFoundHeading": "الصفحة غير موجودة",
+    "notFoundBody": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
+    "backHome": "العودة إلى الرئيسية"
+  },
+  "designSystem": {
+    "heading": "نظام التصميم",
+    "intro": "معاينة داخلية للرموز والمكوّنات الأساسية. غير مفهرسة ومعطّلة في النسخة المنشورة.",
+    "colors": "رموز الألوان",
+    "typography": "الطباعة",
+    "buttons": "الأزرار والروابط",
+    "surfaces": "الأسطح والبطاقات والوسوم",
+    "layout": "التخطيط والفواصل",
+    "media": "إطار الوسائط",
+    "motion": "الحركة",
+    "sampleHeading": "أنظمة هندسية بتكوين دقيق",
+    "sampleBody": "فقرة تجريبية لتقييم طول السطر والإيقاع والتباين فقط. ليست من محتوى الموقع ولا تظهر خارج هذه المعاينة الداخلية.",
+    "primary": "إجراء رئيسي",
+    "secondary": "إجراء ثانوي",
+    "ghost": "إجراء هادئ",
+    "textLink": "رابط نصي ضمن الفقرة",
+    "cardTitle": "عنوان البطاقة",
+    "cardBody": "نص البطاقة لتقييم التخطيط فقط.",
+    "tag": "وسم",
+    "mediaCaption": "إطار وسائط بنسبة 4:5 — نسبة محجوزة دون إزاحة في التخطيط",
+    "revealDemo": "ظهور مرتبط بالتمرير (معطّل عند تقليل الحركة)"
+  },
+  "cinematic": {
+    "skipIntro": "تخطَّ المقدمة",
+    "scrollCue": "مرّر للدخول",
+    "acts": {
+      "ignition": {
+        "label": "الحوسبة",
+        "line": "كل نظام يبدأ بإشارة."
+      },
+      "intelligence": {
+        "label": "الذكاء",
+        "line": "البنية تنبثق من البيانات."
+      },
+      "engineering": {
+        "label": "الهندسة",
+        "line": "الذكاء يحتاج إلى جسدٍ ليعمل."
+      },
+      "systems": {
+        "label": "الأنظمة",
+        "line": "برمجيات وبيانات وآلات، في منظومة واحدة."
+      },
+      "human": {
+        "label": "النيّة الإنسانية",
+        "line": "كل نظام يبدأ بسؤال اختار أحدهم أن يطرحه."
+      }
+    },
+    "transition": {
+      "label": "الأعمال",
+      "line": "الإنسان خلف الأنظمة."
+    },
+    "portraitAlt": "صورة شخصية لـ{name}"
+  },
+  "pages": {
+    "common": {
+      "present": "حتى الآن",
+      "devEmpty": "معاينة تطوير — لا يوجد محتوى منشور لهذه الصفحة بعد. في بيئة الإنتاج لا تكون موجودة (404) ولا يُشار إليها بأي رابط.",
+      "breadcrumb": "مسار التنقل",
+      "home": "الرئيسية",
+      "externalHint": "(يفتح موقعاً خارجياً)",
+      "pdf": "PDF",
+      "document": "مستند"
+    },
+    "about": {
+      "title": "نبذة",
+      "description": "نبذة عن {name}، {title}: الخلفية والتعليم والعمل.",
+      "education": "التعليم",
+      "continue": "متابعة",
+      "portraitAlt": "صورة شخصية لـ{name}"
+    },
+    "projects": {
+      "title": "المشاريع",
+      "description": "مشاريع {name}، {title} — دراسات حالة تعرض السياق والمنهجية والنتائج.",
+      "lead": "دراسات حالة لأنظمة صممها وبناها {name}.",
+      "filter": "تصفية حسب الفئة",
+      "all": "الكل",
+      "count": "{count, plural, zero {لا مشاريع} one {مشروع واحد} two {مشروعان} few {# مشاريع} many {# مشروعاً} other {# مشروع}}",
+      "view": "قراءة دراسة الحالة"
+    },
+    "project": {
+      "overview": "نظرة عامة",
+      "problem": "المشكلة",
+      "approach": "المنهجية",
+      "architecture": "البنية",
+      "results": "النتائج",
+      "details": "التفاصيل",
+      "role": "الدور",
+      "timeline": "الفترة",
+      "category": "الفئة",
+      "context": "السياق",
+      "technologies": "التقنيات",
+      "links": "روابط",
+      "media": "الوسائط",
+      "video": "مشاهدة الفيديو",
+      "related": "مشاريع ذات صلة",
+      "allProjects": "كل المشاريع",
+      "contactCta": "ناقش مشروعاً"
+    },
+    "experience": {
+      "title": "الخبرات",
+      "description": "الخبرات المهنية لـ{name}، {title}.",
+      "technologies": "التقنيات",
+      "projects": "المشاريع"
+    },
+    "skills": {
+      "title": "المهارات",
+      "description": "المهارات التقنية لـ{name}، {title}، مرتبطة بالمشاريع التي تثبتها.",
+      "lead": "ترتبط كل مهارة بالعمل الذي يثبتها.",
+      "evidence": "تظهر في"
+    },
+    "certificates": {
+      "title": "الشهادات",
+      "description": "شهادات {name}، {title}.",
+      "issued": "تاريخ الإصدار",
+      "credentialId": "رقم الشهادة",
+      "verify": "التحقق لدى الجهة المانحة",
+      "viewPdf": "عرض الشهادة"
+    },
+    "cv": {
+      "title": "السيرة الذاتية",
+      "description": "السيرة الذاتية لـ{name}، {title}.",
+      "download": "تنزيل السيرة الذاتية",
+      "version": "الإصدار {version}",
+      "updated": "آخر تحديث {date}",
+      "experience": "الخبرات",
+      "education": "التعليم",
+      "skills": "المهارات"
+    },
+    "contact": {
+      "title": "تواصل",
+      "description": "طرق التواصل مع {name}، {title}.",
+      "lead": "تواصل مع {name} عبر القنوات التالية.",
+      "email": "البريد الإلكتروني",
+      "profiles": "الحسابات"
+    },
+    "portfolio": {
+      "introduction": "تعريف",
+      "readMore": "المزيد عن {name}",
+      "selectedWork": "أعمال مختارة",
+      "allProjects": "كل المشاريع",
+      "expertise": "الخبرات التقنية",
+      "allSkills": "كل المهارات",
+      "experience": "الخبرات",
+      "allExperience": "كل الخبرات",
+      "credentials": "الشهادات والاعتمادات",
+      "allCertificates": "كل الشهادات",
+      "contact": "تواصل",
+      "contactLead": "لنبدأ الحديث.",
+      "contactCta": "تواصل معي"
+    },
+    "categories": {
+      "artificial-intelligence": "الذكاء الصنعي",
+      "machine-learning": "تعلّم الآلة",
+      "computer-vision": "الرؤية الحاسوبية",
+      "robotics": "الروبوتات",
+      "software-engineering": "هندسة البرمجيات",
+      "web": "الويب",
+      "mobile": "تطبيقات الجوال",
+      "data": "البيانات",
+      "other": "أخرى",
+      "ai-ml": "الذكاء الصنعي وتعلّم الآلة",
+      "programming": "البرمجة",
+      "backend": "الواجهات الخلفية",
+      "frontend": "الواجهات الأمامية",
+      "devops-infrastructure": "DevOps والبنية التحتية",
+      "databases": "قواعد البيانات",
+      "tools": "الأدوات"
+    }
+  }
+}

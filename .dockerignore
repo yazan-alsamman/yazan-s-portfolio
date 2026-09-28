@@ -1,0 +1,25 @@
+# Never send secrets, local state or build output into the Docker build context.
+.env
+.env.*
+!.env.example
+# Phase 9: env files at any depth (deploy/.env.production holds the production secrets),
+# backup sets and the owner's private photo folder never enter the build context.
+**/.env
+**/.env.*
+!.env.example
+backups
+photos
+.git
+node_modules
+.next
+media
+coverage
+test-results
+playwright-report
+*.log
+docs
+prompts
+# portrait.jpg is NOT ignored: since Phase 3 the pages import it (build-hashed copy for the scene
+# and the static composition). Excluding it broke every image build (found in the Phase 9 dry run).
+# The encrypted one-time content package is only for the first deployment, never for the image.
+deploy/content

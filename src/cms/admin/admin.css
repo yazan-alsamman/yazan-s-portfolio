@@ -1,0 +1,32 @@
+/*
+ * Phase 5 admin refinements (loaded only by the Payload admin layout — never the public site).
+ * Narrow screens: Payload's header breadcrumb (e.g. a long email or title) and the document
+ * "last modified / created" row could not shrink or wrap and caused horizontal scrolling at
+ * ~390px. Let them truncate / wrap instead. No visual change on desktop.
+ */
+@media (max-width: 768px) {
+  .app-header__controls-wrapper,
+  .app-header__step-nav-wrapper,
+  .step-nav {
+    min-width: 0;
+  }
+  .app-header__step-nav-wrapper {
+    overflow: hidden;
+  }
+  .step-nav__last {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .doc-controls__meta {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  .doc-controls__list-item {
+    min-width: 0;
+  }
+  .doc-controls__value {
+    white-space: normal;
+  }
+}

@@ -1,0 +1,81 @@
+# Production topology on the VPS (ADR-012, Phase 9). Runbook: docs/deployment/RUNBOOK.md.
+#
+#   Internet → host nginx (TLS, HSTS, rate limits; deploy/nginx/yazanalsamman.com.conf)
+#            → 127.0.0.1:${APP_PORT} → app (node server.js, standalone, non-root)
+#            → postgres (private network only)
+#
+# Own compose project, networks and volumes: nothing here touches other containers on the host.
+# Configuration and secrets come from deploy/.env.production (git-ignored; template:
+# deploy/env.production.example). Used as:
+#   docker compose --env-file deploy/.env.production -f deploy/docker-compose.prod.yml <command>
+name: yazan-portfolio-prod
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    # Loopback only: the image build (pages are generated from the CMS, R-33) and backups reach
+    # the database from the host. Never published on a public interface.
+    ports:
+      - '127.0.0.1:${POSTGRES_HOST_PORT:-5433}:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [backend]
+    security_opt: ['no-new-privileges:true']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits: { memory: 512m }
+    logging: &logging
+      driver: json-file
+      options: { max-size: '10m', max-file: '5' }
+
+  app:
+    image: ${APP_IMAGE:-yazan-portfolio:current}
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+    # Runtime configuration only (the image contains no .env; see Dockerfile).
+    environment:
+      SITE_URL: ${SITE_URL:?Set SITE_URL}
+      SITE_ENV: ${SITE_ENV:?Set SITE_ENV}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?Set PAYLOAD_SECRET}
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET:?Set REVALIDATE_SECRET}
+      MEDIA_DIR: /app/media
+    # Only the host reverse proxy talks to the app.
+    ports:
+      - '127.0.0.1:${APP_PORT:-3000}:3000'
+    volumes:
+      - media:/app/media
+    networks: [backend]
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    healthcheck:
+      # Liveness + database readiness (src/app/(payload)/api/internal/health/route.ts).
+      test: ['CMD-SHELL', 'wget -q -O /dev/null http://127.0.0.1:3000/api/internal/health || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits: { memory: 1g }
+    logging: *logging
+
+networks:
+  # Private to this project. Postgres is reachable only from the app and from the host's
+  # loopback port above; neither container publishes anything on a public interface.
+  backend: {}
+
+volumes:
+  pgdata: {}
+  media: {}
