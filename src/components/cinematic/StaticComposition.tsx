@@ -5,6 +5,8 @@ import { GridLines } from '@/components/shell/GridLines';
  * It is what reduced-motion users, WebGL-less browsers and every first paint see, and what
  * remains if the 3D layer fails at any point — never a blank canvas (spec §9, §10).
  * Same visual language as the scene: obsidian environment, measured grid, a horizon of signal.
+ * The Inference Core drawing belongs to the arrival chapter (StaticCore), not to this sticky layer,
+ * so it scrolls away with the identity instead of sitting behind every later act.
  */
 export function StaticComposition() {
   return (

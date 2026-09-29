@@ -13,6 +13,7 @@ import { fontVariables } from '../fonts';
 import { SiteHeader } from '@/components/shell/SiteHeader';
 import { SiteFooter } from '@/components/shell/SiteFooter';
 import { SkipLink } from '@/components/shell/SkipLink';
+import { PointerEffects } from '@/components/shell/PointerEffects';
 import { themeInitScript } from '@/components/shell/ThemeToggle';
 
 type Props = { children: ReactNode; params: Promise<{ locale: string }> };
@@ -81,6 +82,7 @@ export default async function LocaleLayout({ children, params }: Props) {
             {children}
           </main>
           <SiteFooter locale={locale} />
+          <PointerEffects />
         </NextIntlClientProvider>
       </body>
     </html>

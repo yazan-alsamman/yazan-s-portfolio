@@ -12,6 +12,7 @@ import { buildGraph, NeuralGraph } from './parts/NeuralGraph';
 import { Actuator, ACTUATOR_BASE } from './parts/Actuator';
 import { Links } from './parts/Links';
 import { Portrait, PORTRAIT_POSITION } from './parts/Portrait';
+import { InferenceCore } from './parts/InferenceCore';
 
 export type CinematicCanvasProps = {
   tier: Exclude<Tier, 'static'>;
@@ -74,6 +75,7 @@ export default function CinematicCanvas({
       <Lights shadows={settings.shadows} />
       <Field count={settings.points} />
       <Circuits paths={settings.circuitPaths} />
+      <InferenceCore tier={tier} />
       <NeuralGraph layout={layout} />
       <Actuator shadows={settings.shadows} />
       <Links graphOutputs={layout.outputs} effector={effector} portrait={PORTRAIT_POSITION} />

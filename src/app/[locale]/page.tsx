@@ -6,7 +6,14 @@ import type { Locale } from '@/i18n/routing';
 import { env } from '@/lib/env';
 import { buildPageMetadata } from '@/lib/seo/metadata';
 import { homeStructuredData, serializeJsonLd } from '@/lib/seo/structured-data';
-import { getHomeSectionAvailability, getProfile, getSiteSettings } from '@/content/repository';
+import {
+  getCertificates,
+  getHomeSectionAvailability,
+  getProfile,
+  getProjects,
+  getSiteSettings,
+  getSkills,
+} from '@/content/repository';
 import { homeSectionOrder } from '@/content/types';
 import { OWNER_INPUT_PLACEHOLDER } from '@/i18n/messages';
 import { Container, Section } from '@/components/ui/layout';
@@ -15,6 +22,7 @@ import { DevPlaceholder } from '@/components/shell/DevPlaceholder';
 import { HomeSections } from '@/components/portfolio/HomeSections';
 import { CinematicStage } from '@/components/cinematic/CinematicStage';
 import { StaticComposition } from '@/components/cinematic/StaticComposition';
+import { StaticCore } from '@/components/cinematic/StaticCore';
 import { ACTS, type ActId } from '@/scene/timeline';
 // Build-time hashed copy of the authoritative 538×661 portrait; the source file is never modified.
 import portrait from '../../../portrait.jpg';
@@ -85,12 +93,23 @@ export default async function HomePage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale });
-  const [profile, entity, sections, seo] = await Promise.all([
+  const [profile, entity, sections, seo, projects, skills, certificates] = await Promise.all([
     getProfile(locale),
     getProfile('en'), // canonical entity name for JSON-LD (identical on every locale)
     getHomeSectionAvailability(locale),
     homeSeo(locale),
+    getProjects(locale),
+    getSkills(locale),
+    getCertificates(locale),
   ]);
+  // Hero readout: counts of verified, published CMS content only (nothing is typed in by hand).
+  const readout = (
+    [
+      ['projects', projects.length],
+      ['skills', skills.length],
+      ['certificates', certificates.length],
+    ] as const
+  ).filter(([, count]) => count > 0);
   const name = profile?.name ?? null;
   const title = profile?.title ?? null;
   const pending = homeSectionOrder.filter((key) => !sections[key]);
@@ -128,7 +147,9 @@ export default async function HomePage({ params }: Props) {
         <div className="cine-chapters" data-theme="dark">
           {/* ACT I — Arrival: the identity is present in the first paint, no loader. */}
           <div className="cine-chapter cine-arrival" data-act="arrival" style={chapterStyle('arrival')}>
-            <Container className="flex min-h-svh flex-col justify-end gap-10 pb-[12svh]">
+            {/* The hero object as a drawing: first paint and the static tier; yields to the 3D core. */}
+            <StaticCore />
+            <Container className="relative flex min-h-svh flex-col justify-end gap-10 pb-[12svh]">
               <h1 id="home-title" className="flex flex-col items-start gap-5">
                 <span className="block font-display text-display font-medium text-fg-strong">
                   {name ?? <DevPlaceholder show={!env.isProduction} />}
@@ -142,16 +163,40 @@ export default async function HomePage({ params }: Props) {
                   <DevPlaceholder show={!env.isProduction} />
                 )}
               </h1>
+              {readout.length ? (
+                // Portfolio index: on large screens it takes the upper-left field of the frame
+                // (the core owns the right), on phones it follows the identity.
+                <dl
+                  aria-label={t('cinematic.readout')}
+                  className="readout lg:absolute lg:start-(--gutter) lg:top-[calc(var(--header-height)+9svh)]"
+                >
+                  {readout.map(([key, count]) => (
+                    <div key={key}>
+                      <dt className="order-2 font-label text-label text-fg-muted uppercase">
+                        {t(`nav.${key}`)}
+                      </dt>
+                      <dd className="order-1 font-mono text-h3 text-fg-strong tabular-nums">
+                        {String(count).padStart(2, '0')}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
               <div className="flex flex-wrap items-center justify-between gap-6">
                 <p className="cine-cue font-label text-label text-fg-muted uppercase">
                   {t('cinematic.scrollCue')}
                 </p>
-                <a
-                  href="#portfolio"
-                  className="inline-flex min-h-11 items-center font-label text-label text-fg uppercase"
-                >
-                  <span className="link-underline">{t('cinematic.skipIntro')}</span>
-                </a>
+                <div className="flex flex-wrap items-center gap-x-10 gap-y-2">
+                  <p aria-hidden="true" className="hidden font-mono text-meta text-fg-muted lg:block">
+                    {t('cinematic.figure')}
+                  </p>
+                  <a
+                    href="#portfolio"
+                    className="inline-flex min-h-11 items-center font-label text-label text-fg uppercase"
+                  >
+                    <span className="link-underline">{t('cinematic.skipIntro')}</span>
+                  </a>
+                </div>
               </div>
             </Container>
           </div>

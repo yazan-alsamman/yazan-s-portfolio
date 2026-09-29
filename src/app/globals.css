@@ -93,6 +93,11 @@
     sans-serif;
   --font-label-stack:
     var(--font-space-grotesk), var(--font-inter), var(--font-plex-arabic), ui-sans-serif, sans-serif;
+  /* Technical voice (design evolution): indices, counts, dates, stack lists. System monospace only —
+     zero font bytes; tabular by construction, so measured values align like an instrument readout. */
+  --font-mono-stack:
+    ui-monospace, 'SF Mono', SFMono-Regular, 'Cascadia Mono', 'Segoe UI Mono', Consolas, 'Liberation Mono',
+    monospace;
 
   /* Line heights — Latin defaults */
   --lh-display: 0.98;
@@ -128,6 +133,8 @@
   --font-display-stack:
     var(--font-plex-arabic), var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-label-stack: var(--font-plex-arabic), var(--font-space-grotesk), ui-sans-serif, sans-serif;
+  /* Arabic words never set in a Latin monospace; digits and codes still fall through to it. */
+  --font-mono-stack: var(--font-plex-arabic), ui-monospace, Consolas, monospace;
   --lh-display: 1.3;
   --lh-heading: 1.4;
   --lh-body: 1.9;
@@ -178,6 +185,7 @@
   --text-sm: 0.875rem;
   --text-xs: 0.75rem;
   --text-label: 0.75rem;
+  --text-meta: 0.75rem; /* mono metadata: same optical size as labels, never below 12px */
   --text-nav: 0.875rem;
   --text-wordmark: 0.8125rem;
   --text-menu: clamp(2rem, 1.2rem + 4vw, 3.25rem);
@@ -211,6 +219,7 @@
   --font-body: var(--font-body-stack);
   --font-display: var(--font-display-stack);
   --font-label: var(--font-label-stack);
+  --font-mono: var(--font-mono-stack);
 
   /* Script-aware leading/tracking for the type scale (resolved per element → Arabic-safe) */
   --text-display--line-height: var(--lh-display);
@@ -225,6 +234,8 @@
   --text-sm--line-height: var(--lh-body);
   --text-label--line-height: var(--lh-tight);
   --text-label--letter-spacing: var(--tracking-label);
+  --text-meta--line-height: var(--lh-tight);
+  --text-meta--letter-spacing: 0.04em;
   --text-nav--line-height: var(--lh-tight);
   --text-menu--line-height: var(--lh-heading);
   --text-menu--letter-spacing: var(--tracking-heading);
@@ -770,5 +781,257 @@
   .rich-text figure img {
     border-radius: var(--radius-md);
     border: 1px solid var(--line);
+  }
+}
+
+/* ---------- 12. Design evolution — instrument language ----------
+   One idea carried through every section: the portfolio as an engineering document. Figures carry
+   registration marks, values read like an instrument (mono, tabular), rows are case files. Motion is
+   limited to feedback (hover/focus/press) and compositor-only properties; everything collapses under
+   the reduced-motion contract (§8). Pointer-driven effects run only for fine pointers (PointerEffects). */
+@layer components {
+  /* Inference Core drawing (arrival chapter). Placed where the 3D object sits in each framing; it
+     scrolls away with the identity and fades out once the manufactured object is on screen. */
+  .cine-arrival {
+    position: relative;
+  }
+  [data-cinematic='webgl'] .cine-core {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--duration-reveal) var(--ease-standard),
+      visibility 0s linear var(--duration-reveal);
+  }
+  .cine-core {
+    position: absolute;
+    pointer-events: none;
+    inline-size: min(33vw, 34rem);
+    inset-inline-end: max(var(--gutter), calc((100vw - 90rem) / 2 + var(--gutter)));
+    inset-block-start: 16svh;
+    color: var(--fg-muted);
+    transition: opacity var(--duration-reveal) var(--ease-standard);
+  }
+  :dir(rtl) .cine-core {
+    transform: scaleX(-1); /* the drawing mirrors with the layout; it carries no text but indices */
+  }
+  :dir(rtl) .cine-core text {
+    transform: scaleX(-1);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  @media (width < 64rem) {
+    .cine-core {
+      inline-size: min(88vw, 30rem);
+      inset-inline: 0;
+      margin-inline: auto;
+      inset-block-start: 13svh;
+    }
+  }
+  .cine-core :is(.sc-face, .sc-die) {
+    fill: rgb(13 17 23 / 0.9);
+    stroke: rgb(99 107 117 / 0.9);
+    stroke-width: 1;
+    stroke-linejoin: round;
+  }
+  .cine-core .sc-die {
+    fill: rgb(7 9 13 / 0.92);
+  }
+  .cine-core .sc-edge {
+    stroke: rgb(99 107 117 / 0.8);
+    stroke-width: 1;
+  }
+  .cine-core .sc-pin {
+    stroke: #bfae8a;
+    stroke-width: 2;
+    opacity: 0.8;
+  }
+  .cine-core .sc-trace {
+    stroke: var(--brand-cyan);
+    stroke-width: 0.8;
+    opacity: 0.55;
+  }
+  .cine-core .sc-iris {
+    stroke: var(--brand-cyan);
+    stroke-width: 1;
+  }
+  .cine-core .sc-axis {
+    stroke: rgb(99 107 117 / 0.6);
+    stroke-dasharray: 3 5;
+  }
+  .cine-core .sc-lead {
+    stroke: rgb(184 193 204 / 0.45);
+    stroke-width: 0.75;
+  }
+  .cine-core .sc-dot {
+    fill: var(--brand-cyan);
+  }
+  .cine-core .sc-num {
+    fill: var(--brand-mist);
+    font-family: var(--font-mono-stack);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+
+  /* Hero readout: verified CMS counts, set like an instrument panel. */
+  .readout {
+    display: flex;
+    flex-wrap: wrap; /* 320px: wraps instead of overflowing */
+    column-gap: clamp(1.25rem, 0.6rem + 2.4vw, 3rem);
+    row-gap: 1rem;
+  }
+  .readout > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-inline-start: 0.75rem;
+    border-inline-start: 1px solid var(--line-strong);
+  }
+
+  /* Figure registration marks: four corner ticks instead of a rounded box (engineering drawing). */
+  .fig-marks {
+    position: relative;
+  }
+  .fig-marks::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    pointer-events: none;
+    --m: color-mix(in oklab, var(--fg-muted) 70%, transparent);
+    background:
+      linear-gradient(var(--m), var(--m)) top left / 12px 1px no-repeat,
+      linear-gradient(var(--m), var(--m)) top left / 1px 12px no-repeat,
+      linear-gradient(var(--m), var(--m)) top right / 12px 1px no-repeat,
+      linear-gradient(var(--m), var(--m)) top right / 1px 12px no-repeat,
+      linear-gradient(var(--m), var(--m)) bottom left / 12px 1px no-repeat,
+      linear-gradient(var(--m), var(--m)) bottom left / 1px 12px no-repeat,
+      linear-gradient(var(--m), var(--m)) bottom right / 12px 1px no-repeat,
+      linear-gradient(var(--m), var(--m)) bottom right / 1px 12px no-repeat;
+    transition: inset var(--duration-base) var(--ease-emphasized);
+  }
+  :is(.group\/row:hover, .group\/row:focus-within) .fig-marks::after {
+    inset: -10px;
+  }
+
+  /* Case-file row: an accent hairline draws along the top edge on hover/focus (compositor-only). */
+  .case-row::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: -1px;
+    block-size: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-slow) var(--ease-emphasized);
+  }
+  :dir(rtl) .case-row::before {
+    transform-origin: right;
+  }
+  .case-row:hover::before,
+  .case-row:focus-within::before {
+    transform: scaleX(1);
+  }
+
+  /* Cursor light: a faint accent field that follows a fine pointer (vars set by PointerEffects). */
+  .spot {
+    position: relative;
+    isolation: isolate;
+  }
+  .spot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      28rem circle at var(--mx, 50%) var(--my, 50%),
+      color-mix(in oklab, var(--accent) 7%, transparent),
+      transparent 65%
+    );
+    transition: opacity var(--duration-slow) var(--ease-standard);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .spot:hover::after {
+      opacity: 1;
+    }
+  }
+
+  /* Magnetic action: follows a fine pointer by a few pixels (vars set by PointerEffects). */
+  .magnetic {
+    translate: var(--tx, 0) var(--ty, 0);
+    transition:
+      translate var(--duration-slow) var(--ease-emphasized),
+      background-color var(--duration-base) var(--ease-standard),
+      border-color var(--duration-base) var(--ease-standard),
+      color var(--duration-base) var(--ease-standard);
+  }
+
+  /* Capability matrix: hairline cells. The container draws the top/start edges and each cell its
+     end/bottom edges, so an incomplete last row simply stays open (no filled placeholder cell). */
+  .matrix {
+    display: grid;
+    border-block-start: 1px solid var(--line);
+    border-inline-start: 1px solid var(--line);
+  }
+  .matrix > * {
+    border-block-end: 1px solid var(--line);
+    border-inline-end: 1px solid var(--line);
+  }
+
+  /* Timeline rail (experience): a measured vertical line with a node per entry. */
+  .rail-node {
+    position: relative;
+  }
+  .rail-node::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block: 2.75rem -1px;
+    inline-size: 1px;
+    background: linear-gradient(to bottom, var(--line-strong), var(--line) 70%);
+  }
+  .rail-node::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: -3px;
+    inset-block-start: 2.6rem;
+    inline-size: 7px;
+    block-size: 7px;
+    border: 1px solid var(--accent);
+    background: var(--bg);
+    rotate: 45deg;
+  }
+
+  /* Closing pipeline (contact): stages joined by a signal that draws once in view. */
+  .pipeline-step::after {
+    content: '';
+    display: block;
+    block-size: 1px;
+    margin-block-start: 0.75rem;
+    background: linear-gradient(to right, var(--accent), transparent);
+    transform-origin: left;
+  }
+  :dir(rtl) .pipeline-step::after {
+    background: linear-gradient(to left, var(--accent), transparent);
+    transform-origin: right;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .pipeline-step::after {
+        animation: draw-x linear both;
+        animation-timeline: view();
+        animation-range: entry 10% cover 35%;
+      }
+    }
+  }
+}
+
+@keyframes draw-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
   }
 }

@@ -14,6 +14,7 @@ import { buildPageMetadata } from '@/lib/seo/metadata';
 import { frameFit, isPortrait } from '@/lib/image-fit';
 import { breadcrumbStructuredData, projectStructuredData, serializeJsonLd } from '@/lib/seo/structured-data';
 import { localizedPath } from '@/lib/seo/urls';
+import { cn } from '@/lib/cn';
 import { Container } from '@/components/ui/layout';
 import { Label } from '@/components/ui/typography';
 import { ButtonLink, TextLink } from '@/components/ui/actions';
@@ -82,11 +83,12 @@ export default async function ProjectPage({ params }: Props) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
   const project = await resolveProject(locale, slug);
-  const [t, tc, common, nav, all, routes] = await Promise.all([
+  const [t, tc, common, nav, portfolio, all, routes] = await Promise.all([
     getTranslations({ locale, namespace: 'pages.project' }),
     getTranslations({ locale, namespace: 'pages.categories' }),
     getTranslations({ locale, namespace: 'pages.common' }),
     getTranslations({ locale, namespace: 'nav' }),
+    getTranslations({ locale, namespace: 'pages.portfolio' }),
     getProjects(locale),
     getRouteAvailability(locale),
   ]);
@@ -149,11 +151,12 @@ export default async function ProjectPage({ params }: Props) {
             <p className="max-w-(--container-prose) text-lead text-fg-muted">{project.summary}</p>
           </div>
           {details.length ? (
-            <dl className="grid gap-x-10 gap-y-6 border-t border-line pt-8 sm:grid-cols-2 lg:grid-cols-4">
+            // Spec sheet: every cell is a CMS field; empty fields produce no cell.
+            <dl className={cn('matrix sm:grid-cols-2', details.length > 2 && 'lg:grid-cols-4')}>
               {details.map(([term, value]) => (
-                <div key={term} className="flex flex-col gap-1">
+                <div key={term} className="flex flex-col gap-2 p-5 md:p-6">
                   <dt className="font-label text-label text-fg-muted uppercase">{term}</dt>
-                  <dd className="text-body text-fg">{value}</dd>
+                  <dd className="text-body text-fg-strong">{value}</dd>
                 </div>
               ))}
             </dl>
@@ -163,27 +166,29 @@ export default async function ProjectPage({ params }: Props) {
 
       {project.cover ? (
         <Container className="pb-16">
-          <div className="relative aspect-video overflow-hidden rounded-lg border border-line bg-surface">
-            <Image
-              src={project.cover.url}
-              alt={project.cover.alt}
-              fill
-              priority
-              sizes="(min-width: 90rem) 84rem, 100vw"
-              className={frameFit(project.cover)}
-            />
+          <div className="fig-marks">
+            <div className="relative aspect-video overflow-hidden rounded-sm border border-line bg-surface">
+              <Image
+                src={project.cover.url}
+                alt={project.cover.alt}
+                fill
+                priority
+                sizes="(min-width: 90rem) 84rem, 100vw"
+                className={frameFit(project.cover)}
+              />
+            </div>
           </div>
         </Container>
       ) : null}
 
       <Container className="flex flex-col pb-16">
-        {body.map(([heading, value]) =>
-          value ? (
-            <CaseSection key={heading} heading={heading}>
+        {body
+          .filter(([, value]) => value)
+          .map(([heading, value], i) => (
+            <CaseSection key={heading} heading={heading} index={i + 1}>
               <RichText value={value} />
             </CaseSection>
-          ) : null,
-        )}
+          ))}
 
         {project.technologies.length ? (
           <CaseSection heading={t('technologies')}>
@@ -249,6 +254,7 @@ export default async function ProjectPage({ params }: Props) {
                   index={i + 1}
                   headingLevel={3}
                   categoryLabel={p.category ? tc(p.category) : null}
+                  stackLabel={portfolio('stack')}
                 />
               ))}
             </div>
@@ -270,11 +276,21 @@ export default async function ProjectPage({ params }: Props) {
   );
 }
 
-/** Case-study section: label column + reading column on desktop, stacked on mobile. */
-function CaseSection({ heading, children }: { heading: string; children: ReactNode }) {
+/**
+ * Case-study section: label column + reading column on desktop, stacked on mobile. Narrative
+ * sections carry an index (01 overview → 05 results) so the case reads as one engineered document.
+ */
+function CaseSection({ heading, index, children }: { heading: string; index?: number; children: ReactNode }) {
   return (
     <section className="grid gap-4 border-t border-line py-10 md:grid-cols-12 md:gap-8 md:py-14">
-      <h2 className="font-label text-label text-fg-muted uppercase md:col-span-3">{heading}</h2>
+      <h2 className="flex items-baseline gap-3 font-label text-label text-fg-muted uppercase md:col-span-3 md:flex-col md:gap-2">
+        {index ? (
+          <span aria-hidden="true" className="font-mono text-meta text-accent-text tabular-nums">
+            {String(index).padStart(2, '0')}
+          </span>
+        ) : null}
+        <span>{heading}</span>
+      </h2>
       <div className="md:col-span-8 lg:col-span-7">{children}</div>
     </section>
   );

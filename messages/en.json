@@ -108,7 +108,9 @@
       "label": "The work",
       "line": "The person behind the systems."
     },
-    "portraitAlt": "Portrait of {name}"
+    "portraitAlt": "Portrait of {name}",
+    "figure": "Fig. 01 — Inference core: sensor, silicon, substrate",
+    "readout": "Portfolio index"
   },
   "pages": {
     "common": {
@@ -205,7 +207,15 @@
       "allCertificates": "All certificates",
       "contact": "Contact",
       "contactLead": "Start a conversation.",
-      "contactCta": "Get in touch"
+      "contactCta": "Get in touch",
+      "pipeline": {
+        "ideas": "Ideas",
+        "engineering": "Engineering",
+        "systems": "Systems",
+        "intelligence": "Intelligence"
+      },
+      "stack": "Stack",
+      "shownOf": "{shown} of {total}"
     },
     "categories": {
       "artificial-intelligence": "Artificial intelligence",

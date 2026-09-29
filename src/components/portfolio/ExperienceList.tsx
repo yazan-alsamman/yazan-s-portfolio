@@ -7,7 +7,8 @@ import { TextLink } from '@/components/ui/actions';
 import { TechnologyList } from './TechnologyList';
 
 /**
- * Experience as a measured timeline: period in the label column, role + organization, then the
+ * Experience as a measured timeline (a rail with one node per role — design evolution): period in
+ * the mono label column, role + organization, then the
  * verified description, technologies and the projects done in that role (IA §5: Experience →
  * Projects). `compact` drops descriptions (homepage and CV summaries).
  */
@@ -30,19 +31,30 @@ export function ExperienceList({
   return (
     <ol className="border-b border-line">
       {items.map((item) => (
-        <li key={item.id} className="grid gap-4 border-t border-line py-10 md:grid-cols-12 md:gap-8">
-          <p className="font-label text-label text-fg-muted tabular-nums md:col-span-3">
-            {/* No stated start date → no period (the column keeps the layout). */}
-            {item.startDate ? (
+        <li
+          key={item.id}
+          className="rail-node grid gap-4 border-t border-line py-10 ps-8 md:grid-cols-12 md:gap-8 md:ps-10"
+        >
+          {/* No stated start date → no period column (nothing is inferred). */}
+          {item.startDate ? (
+            <p className="font-mono text-meta text-fg-muted tabular-nums md:col-span-3">
               <time dateTime={isoDay(item.startDate)}>
                 {formatPeriod(item.startDate, item.endDate, locale, labels.present)}
               </time>
-            ) : null}
-          </p>
-          <div className="flex flex-col gap-4 md:col-span-9 lg:col-span-8">
+            </p>
+          ) : null}
+          <div
+            className={
+              item.startDate
+                ? 'flex flex-col gap-4 md:col-span-9 lg:col-span-8'
+                : 'flex flex-col gap-4 md:col-span-10'
+            }
+          >
             <H className="font-display text-h3 font-medium text-fg-strong">
               {item.title}
-              <span className="block font-body text-body font-normal text-fg-muted">{item.organization}</span>
+              <span className="mt-2 block font-label text-sm font-normal text-accent-text">
+                {item.organization}
+              </span>
             </H>
             {!compact && item.description ? <RichText value={item.description} headingBase={4} /> : null}
             {!compact && item.technologies.length ? (

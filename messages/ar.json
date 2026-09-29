@@ -108,7 +108,9 @@
       "label": "الأعمال",
       "line": "الإنسان خلف الأنظمة."
     },
-    "portraitAlt": "صورة شخصية لـ{name}"
+    "portraitAlt": "صورة شخصية لـ{name}",
+    "figure": "الشكل 01 — نواة الاستدلال: مستشعر، سيليكون، ركيزة",
+    "readout": "فهرس الأعمال"
   },
   "pages": {
     "common": {
@@ -205,7 +207,15 @@
       "allCertificates": "كل الشهادات",
       "contact": "تواصل",
       "contactLead": "لنبدأ الحديث.",
-      "contactCta": "تواصل معي"
+      "contactCta": "تواصل معي",
+      "pipeline": {
+        "ideas": "أفكار",
+        "engineering": "هندسة",
+        "systems": "أنظمة",
+        "intelligence": "ذكاء"
+      },
+      "stack": "التقنيات",
+      "shownOf": "{shown} من {total}"
     },
     "categories": {
       "artificial-intelligence": "الذكاء الصنعي",

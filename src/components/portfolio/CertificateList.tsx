@@ -5,7 +5,7 @@ import { formatMonthYear, isoDay } from '@/lib/format';
 import { TextLink } from '@/components/ui/actions';
 
 /**
- * Certificates as plain, factual content (SEO_MASTER §25: no certificate schema, no implied
+ * Certificates as a register (design evolution: hairline matrix, mono dates) of plain, factual content (SEO_MASTER §25: no certificate schema, no implied
  * verification). Names are shown exactly as authored (never translated blindly — IL-5);
  * a verification link appears only when the issuer provides one.
  */
@@ -24,16 +24,21 @@ export function CertificateList({
 }) {
   const H = `h${headingLevel}` as const;
   return (
-    <ul className="border-b border-line">
-      {items.map((item) => (
-        <li key={item.id} className="grid gap-6 border-t border-line py-10 md:grid-cols-12 md:gap-8">
-          <div className="flex flex-col gap-3 md:col-span-8">
-            <p className="font-label text-label text-accent-text">{item.issuer}</p>
+    <ul className="matrix md:grid-cols-2">
+      {items.map((item, i) => (
+        <li key={item.id} className="spot flex flex-col gap-6 p-6 md:p-8">
+          <div className="flex flex-col gap-3">
+            <p className="flex items-baseline justify-between gap-4">
+              <span className="font-label text-label text-accent-text">{item.issuer}</span>
+              <span aria-hidden="true" className="font-mono text-meta text-fg-muted tabular-nums">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+            </p>
             <H className="font-display text-h3 font-medium text-fg-strong">{item.name}</H>
             {!compact && item.description ? (
               <p className="max-w-(--container-prose) text-body text-fg-muted">{item.description}</p>
             ) : null}
-            <dl className="flex flex-wrap gap-x-8 gap-y-2 text-sm">
+            <dl className="flex flex-wrap gap-x-8 gap-y-2 font-mono text-meta">
               {item.issueDate ? (
                 <div className="flex gap-2">
                   <dt className="text-fg-muted">{labels.issued}</dt>
@@ -45,9 +50,7 @@ export function CertificateList({
               {!compact && item.credentialId ? (
                 <div className="flex gap-2">
                   <dt className="text-fg-muted">{labels.credentialId}</dt>
-                  <dd dir="ltr" className="font-label">
-                    {item.credentialId}
-                  </dd>
+                  <dd dir="ltr">{item.credentialId}</dd>
                 </div>
               ) : null}
             </dl>
@@ -72,13 +75,13 @@ export function CertificateList({
             ) : null}
           </div>
           {!compact && item.attachment?.kind === 'image' ? (
-            <figure className="overflow-hidden rounded-md border border-line bg-surface md:col-span-4">
+            <figure className="mt-auto overflow-hidden rounded-sm border border-line bg-surface">
               <Image
                 src={item.attachment.image.url}
                 alt={item.attachment.image.alt}
                 width={item.attachment.image.width}
                 height={item.attachment.image.height}
-                sizes="(min-width: 48rem) 30vw, 100vw"
+                sizes="(min-width: 48rem) 45vw, 100vw"
                 className="h-auto w-full"
               />
             </figure>

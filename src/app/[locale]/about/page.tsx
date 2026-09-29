@@ -49,7 +49,7 @@ export default async function AboutPage({ params }: Props) {
       {available ? (
         <Container className="flex flex-col gap-20 pb-24 md:pb-32">
           <div className="grid gap-12 md:grid-cols-12 md:gap-8">
-            <figure className="md:col-span-4 md:col-start-1">
+            <figure className="flex flex-col gap-4 self-start md:sticky md:top-[calc(var(--header-height)+2rem)] md:col-span-4 md:col-start-1">
               {profile?.portrait ? (
                 <Image
                   src={profile.portrait.url}
@@ -57,19 +57,28 @@ export default async function AboutPage({ params }: Props) {
                   width={profile.portrait.width}
                   height={profile.portrait.height}
                   sizes="(min-width: 48rem) 22rem, 80vw"
-                  className="h-auto w-full max-w-[22rem] rounded-md border border-line"
+                  className="fig-marks h-auto w-full max-w-[22rem] rounded-sm border border-line"
                 />
               ) : (
-                <div className="cine-portrait-crop max-w-[22rem]">
-                  <Image
-                    src={portrait}
-                    alt={portraitAlt}
-                    sizes="(min-width: 48rem) 22rem, 80vw"
-                    placeholder="blur"
-                    className="cine-portrait-img"
-                  />
+                <div className="fig-marks max-w-[22rem]">
+                  <div className="cine-portrait-crop">
+                    <Image
+                      src={portrait}
+                      alt={portraitAlt}
+                      sizes="(min-width: 48rem) 22rem, 80vw"
+                      placeholder="blur"
+                      className="cine-portrait-img"
+                    />
+                  </div>
                 </div>
               )}
+              {/* Caption: the confirmed identity only (CMS Profile), set as a figure label. */}
+              <figcaption className="flex max-w-[22rem] flex-col gap-1 border-t border-line pt-3">
+                <span className="font-label text-sm text-fg-strong">{identity.name}</span>
+                {identity.title ? (
+                  <span className="font-mono text-meta text-fg-muted">{identity.title}</span>
+                ) : null}
+              </figcaption>
             </figure>
             <div className="md:col-span-7 md:col-start-6">
               <RichText value={profile?.longBio} headingBase={2} className="text-lead" />

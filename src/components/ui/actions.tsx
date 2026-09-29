@@ -10,12 +10,13 @@ import { cn } from '@/lib/cn';
 
 const buttonBase =
   'group/btn font-label inline-flex min-h-11 items-center justify-center gap-3 rounded-sm px-5 text-sm font-medium ' +
-  'transition-[background-color,border-color,color] duration-(--duration-base) ease-standard ' +
+  'transition-[background-color,border-color,color,translate,scale] duration-(--duration-base) ease-standard active:scale-[0.98] ' +
   'disabled:pointer-events-none disabled:opacity-50';
 
 const buttonVariants = {
-  /** High contrast, restrained: light slab on dark; hover shifts to the accent. */
-  primary: 'bg-fg-strong text-bg hover:bg-accent hover:text-on-accent',
+  /** High contrast, restrained: light slab on dark; hover shifts to the accent. Magnetic for a fine
+   * pointer (a few px toward the cursor, PointerEffects) — feedback, never a moving target. */
+  primary: 'magnetic bg-fg-strong text-bg hover:bg-accent hover:text-on-accent',
   /** Outline on a quiet surface; boundary meets 3:1 (line-strong). */
   secondary: 'border border-line-strong text-fg hover:border-fg hover:bg-surface',
   /** Text-only action for low-emphasis contexts. */

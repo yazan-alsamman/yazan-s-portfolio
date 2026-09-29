@@ -20,10 +20,11 @@ export default async function ProjectsPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const available = await gateContentRoute(locale, 'projects');
-  const [t, tc, common, identity, projects] = await Promise.all([
+  const [t, tc, common, portfolio, identity, projects] = await Promise.all([
     getTranslations({ locale, namespace: 'pages.projects' }),
     getTranslations({ locale, namespace: 'pages.categories' }),
     getTranslations({ locale, namespace: 'pages.common' }),
+    getTranslations({ locale, namespace: 'pages.portfolio' }),
     pageIdentity(locale),
     getProjects(locale),
   ]);
@@ -42,7 +43,7 @@ export default async function ProjectsPage({ params }: Props) {
           <ProjectIndex
             projects={projects}
             categoryLabels={categoryLabels}
-            labels={{ filter: t('filter'), all: t('all'), counts }}
+            labels={{ filter: t('filter'), all: t('all'), counts, stack: portfolio('stack') }}
           />
         </Container>
       ) : (

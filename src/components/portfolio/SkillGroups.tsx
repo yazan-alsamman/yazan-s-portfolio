@@ -1,10 +1,12 @@
 import { Link } from '@/i18n/navigation';
 import type { SkillDetail } from '@/content/types';
+import { cn } from '@/lib/cn';
 
 /**
- * Skills grouped by category, in CMS display order. No percentages or bars (CONTENT_MODEL);
- * a proficiency label only when the owner supplied one. Each skill links to the projects that
- * demonstrate it (IA §5) and carries a stable anchor (`#skill-<id>`) for project pages.
+ * Skills as a capability matrix (design evolution): one hairline cell per CMS category, in CMS
+ * display order — index, discipline and a measured count, then the capabilities. No percentages
+ * or bars (CONTENT_MODEL); a proficiency label only when the owner supplied one. Each skill links
+ * to the projects that demonstrate it (IA §5) and carries a stable anchor (`#skill-<id>`).
  */
 export function SkillGroups({
   skills,
@@ -24,29 +26,28 @@ export function SkillGroups({
   const H = `h${headingLevel}` as const;
 
   return (
-    <div className="border-b border-line">
+    <div className={cn('matrix sm:grid-cols-2', groups.size > 2 && 'lg:grid-cols-3')}>
       {[...groups.entries()].map(([category, items], gi) => (
         <section
           key={category}
           aria-labelledby={`skills-${category}`}
-          className="grid gap-6 border-t border-line py-10 md:grid-cols-12 md:gap-8"
+          className="spot flex flex-col gap-6 p-6 md:p-8"
         >
-          <H
-            id={`skills-${category}`}
-            className="flex items-baseline gap-3 font-label text-label text-fg-muted uppercase md:col-span-3"
-          >
-            <span aria-hidden="true" className="text-accent-text tabular-nums">
-              {String(gi + 1).padStart(2, '0')}
+          <div className="flex items-baseline justify-between gap-4">
+            <H
+              id={`skills-${category}`}
+              className="flex items-baseline gap-3 font-label text-label font-normal text-fg-muted uppercase"
+            >
+              <span aria-hidden="true" className="font-mono text-meta text-accent-text tabular-nums">
+                {String(gi + 1).padStart(2, '0')}
+              </span>
+              {categoryLabels[category] ?? category}
+            </H>
+            <span aria-hidden="true" className="font-mono text-meta text-fg-muted tabular-nums">
+              {String(items.length).padStart(2, '0')}
             </span>
-            {categoryLabels[category] ?? category}
-          </H>
-          <ul
-            className={
-              compact
-                ? 'flex flex-wrap gap-x-6 gap-y-3 md:col-span-9'
-                : 'grid gap-x-8 gap-y-6 sm:grid-cols-2 md:col-span-9 xl:grid-cols-3'
-            }
-          >
+          </div>
+          <ul className={compact ? 'flex flex-wrap gap-x-5 gap-y-2' : 'flex flex-col gap-5'}>
             {items.map((skill) => (
               <li key={skill.id} id={compact ? undefined : `skill-${skill.id}`} className="scroll-mt-28">
                 <p dir="ltr" className="font-display text-lead text-fg-strong ar:text-end">
