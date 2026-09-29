@@ -54,9 +54,11 @@ for (const p of legacyProjects) {
   if (!d) continue;
   const live = status(d) === 'published' && ts(d, 'en') === 'approved' && !d.archived;
   if ((p.status === 'published') !== live) errors.push(`project ${p.slug}: expected ${p.status}`);
+  // Every migrated image must still be there; images the owner added later in the dashboard are
+  // allowed (the owner wins over the legacy site), so only a shortfall is an error.
   const images = (d.cover ? 1 : 0) + ((d.gallery as unknown[]) ?? []).length;
-  if (images !== p.images.length)
-    errors.push(`project ${p.slug}: ${images} images, expected ${p.images.length}`);
+  if (images < p.images.length)
+    errors.push(`project ${p.slug}: ${images} images, expected at least ${p.images.length}`);
 }
 const expectedSlugs = new Set(legacyProjects.map((p) => p.slug));
 const extraProjects = projects.filter((d) => !expectedSlugs.has(String(d.slug)));

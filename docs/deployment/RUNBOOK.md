@@ -6,7 +6,7 @@
 ```text
 Internet ──443/80──▶ host nginx (TLS, HSTS, HTTP→HTTPS, www→apex, rate limits)
                         │  deploy/nginx/yazanalsamman.com.conf
-                        ▼  127.0.0.1:3000 (loopback only)
+                        ▼  127.0.0.1:$APP_PORT (loopback only; default 3000 — production uses 3002)
                   app container — node server.js (Next.js standalone + Payload), user `node`
                         │  private network `backend`
                         ▼
@@ -25,7 +25,7 @@ Everything is one compose project (`yazan-portfolio-prod`) with its own network 
 | Disk | ≥ 10 GB free (images, database, media, local backups) |
 | Node / pnpm | **Not needed on the host.** Inside the image: `node:24-alpine`, pnpm **11.10.0** via corepack (`packageManager` in package.json) |
 | Git | To check out the repository (private; deploy key or HTTPS token with read access) |
-| nginx + certbot | On the host (or an existing reverse proxy that can forward to 127.0.0.1:3000) |
+| nginx + certbot | On the host (or an existing reverse proxy that can forward to 127.0.0.1:$APP_PORT) |
 | Ports open | 22 (SSH, key-only), 80, 443. Nothing else: Postgres and the app bind to 127.0.0.1 only |
 
 ## 2. Configuration
@@ -41,7 +41,7 @@ Everything is one compose project (`yazan-portfolio-prod`) with its own network 
 | `POSTGRES_HOST_PORT` | loopback port for the build and backups | default 5433 |
 | `PAYLOAD_SECRET` | build + runtime | rotating it signs everyone out |
 | `REVALIDATE_SECRET` | runtime | signs `POST /api/internal/revalidate` |
-| `APP_PORT` | loopback port nginx forwards to | default 3000 |
+| `APP_PORT` | loopback port nginx forwards to | default 3000; **production: 3002** (3000 is used by another app on the VPS) |
 | `BUILD_DB_HOST`, `BUILD_NETWORK` | image build | `127.0.0.1` + `host` on Linux |
 
 The image contains **no** `.env` (the Dockerfile fails the build if one reaches the standalone output, R-40). Runtime configuration is injected by compose.
@@ -97,7 +97,8 @@ sh deploy/deploy.sh rollback   # start the previous image again (no build)
 ## 6. Post-deploy checks (every deployment)
 
 ```sh
-curl -fsS http://127.0.0.1:3000/api/internal/health         # {"status":"ok"}
+set -a; . deploy/.env.production; set +a   # APP_PORT (never print this file)
+curl -fsS "http://127.0.0.1:${APP_PORT:-3000}/api/internal/health"   # {"status":"ok"}
 # Warm the project pages (they are rendered on first request, then cached — Phase 9 finding R-62):
 curl -s https://yazanalsamman.com/sitemap.xml | grep -o '<loc>[^<]*' | cut -c6- | xargs -n1 curl -s -o /dev/null -w '%{http_code} %{url_effective}\n'
 ```
