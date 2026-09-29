@@ -49,7 +49,7 @@ export async function HomeSections({
     layers,
     profile,
     projects,
-    skills,
+    allSkills,
     experience,
     certificates,
     education,
@@ -73,7 +73,11 @@ export async function HomeSections({
   ]);
   const name = profile?.name ?? '';
   const index = (key: HomeSectionKey) => String(homeSectionOrder.indexOf(key) + 1).padStart(2, '0');
-  const featured = projects.filter((p) => p.featured).slice(0, 6);
+  // Selected systems (Phase 14): the owner's featured flagships, in CMS order.
+  const featured = projects.filter((p) => p.featured).slice(0, 8);
+  // Exploration skills and concept systems never count as demonstrated expertise.
+  const skills = allSkills.filter((s) => s.provenance !== 'exploration');
+  const delivered = projects.filter((p) => p.provenance !== 'concept');
   const shownCertificates = certificates.slice(0, 4);
   const skillCategories = Object.fromEntries(
     [...new Set(skills.map((s) => s.category))].map((c) => [c, tc(c)]),
@@ -86,8 +90,8 @@ export async function HomeSections({
   const role = experience[0];
   const degree = education[0];
   const degreeYear = degree?.endDate?.slice(0, 4) ?? null;
-  const disciplines = orderedDisciplines(projects.map((p) => p.category)).map(
-    (c) => `${tc(c)} ${String(projects.filter((p) => p.category === c).length).padStart(2, '0')}`,
+  const disciplines = orderedDisciplines(delivered.map((p) => p.category)).map(
+    (c) => `${tc(c)} ${String(delivered.filter((p) => p.category === c).length).padStart(2, '0')}`,
   );
   const facts: [string, ReactNode][] = [
     ...(role ? [[tf('role'), `${role.title} · ${role.organization}`] as [string, ReactNode]] : []),

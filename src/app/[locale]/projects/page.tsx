@@ -46,7 +46,14 @@ export default async function ProjectsPage({ params }: Props) {
             projects={projects}
             categories={categories}
             categoryLabels={categoryLabels}
-            labels={{ filter: t('filter'), all: t('all'), counts, case: caseData.labels }}
+            labels={{
+              filter: t('filter'),
+              all: t('all'),
+              counts,
+              case: caseData.labels,
+              evidenceFilter: t('evidenceFilter'),
+              evidence: { verified: t('evidence.verified'), concept: t('evidence.concept') },
+            }}
             figures={caseData.figures}
           />
         </Container>

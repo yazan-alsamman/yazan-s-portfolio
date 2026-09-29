@@ -56,7 +56,9 @@ These fields are empty on purpose. **Do not fill them from the legacy site witho
 |---|---|---|
 | `Person.alternateName` | **NOT CONFIRMED / DEFERRED** (pre-Phase 2 audit) | "Yazan Alsamman" appears only in the pre-0.1 spec text and as a documented candidate; the legacy site uses "Yazan AL Samman"/"Yazan Al Samman", GitHub "Yazan-Alsamman". Matching the domain is not proof of a public name. Stays unset until the owner explicitly confirms. |
 | Arabic copy reviewer (D-9) | **Pending owner-provided reviewer** | Required before Arabic is published. The UI/metadata Arabic in `messages/ar.json` was drafted by the implementation agent; only the name and title above are owner-confirmed. Gate: `src/config/copy-review.ts`. |
-| Short bio / long bio (EN, AR) | **EN migrated verbatim from the legacy site (2026-09-28)**; AR pending | Left as is by owner decision; edited later in the dashboard |
+| Short bio (EN) | **Resolved (2026-09-29, Phase 13): owner-approved AI Engineer bio** — `ownerShortBio` in `src/cms/owner/owner-content.ts` | Built only from facts already in the CMS; AR pending review |
+| Long bio (EN, AR) | **EN still the legacy text**; a replacement is proposed in `docs/reports/PHASE_13_CONTENT_REVIEW.md` (not approved) | AR pending |
+| AI / ML skills and project technologies | **Resolved (2026-09-29, Phase 13):** 6 AI techniques and 6 technologies named in the owner's own project texts, linked to the AI project management and robot navigation projects | `ownerAiSkills`, `ownerTechnologies`, `ownerProjectTechnologies`; no ratings |
 | Public email | **Resolved** (see confirmed facts) | |
 | Social profiles to show (GitHub, LinkedIn, others) | **Resolved:** GitHub, LinkedIn, Instagram; Facebook no | |
 | Location (country/city visibility) | TODO: OWNER INPUT REQUIRED | Not published by default |

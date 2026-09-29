@@ -114,6 +114,94 @@ function browser(r: () => number): Draw {
   return { lines, accent: [`M52 33H${60 + Math.round(r() * 40)}`], nodes: [[46, 33, 2]], boxes };
 }
 
+/** Staged pipeline (ingest → transform → model → output) with a side store (Phase 14). */
+function pipeline(r: () => number): Draw {
+  const n = 4 + Math.round(r());
+  const w = 40;
+  const gap = (240 - n * w) / (n - 1);
+  const boxes: number[][] = [];
+  const accent: string[] = [];
+  const lines: string[] = [];
+  for (let i = 0; i < n; i++) {
+    const x = 40 + i * (w + gap);
+    boxes.push([x, 78, w, 30]);
+    if (i > 0) accent.push(`M${(x - gap).toFixed(1)} 93H${x.toFixed(1)}`);
+  }
+  const store = Math.floor(r() * (n - 1)) + 1;
+  const sx = 40 + store * (w + gap) + w / 2;
+  lines.push(`M${sx.toFixed(1)} 108V140`, `M${(sx - 26).toFixed(1)} 140H${(sx + 26).toFixed(1)}`);
+  boxes.push([sx - 26, 140, 52, 22]);
+  const src = Math.floor(r() * (n - 2)) + 1;
+  const qx = 40 + src * (w + gap) + w / 2;
+  lines.push(`M${qx.toFixed(1)} 78V50`);
+  return { lines, accent, nodes: [[qx, 44, 6]], boxes };
+}
+
+/** Orchestrator with role agents around it; the orchestrator owns every transition. */
+function agents(r: () => number): Draw {
+  const cx = 160;
+  const cy = 100;
+  const n = 5;
+  const boxes: number[][] = [[cx - 34, cy - 16, 68, 32]];
+  const lines: string[] = [];
+  const nodes: [number, number, number][] = [];
+  const start = r() * Math.PI;
+  const active = Math.floor(r() * n);
+  let accent: string[] = [];
+  for (let i = 0; i < n; i++) {
+    const a = start + (i / n) * Math.PI * 2;
+    const x = cx + Math.cos(a) * 110;
+    const y = cy + Math.sin(a) * 66;
+    nodes.push([x, y, 9]);
+    const d = `M${cx.toFixed(1)} ${cy.toFixed(1)}L${x.toFixed(1)} ${y.toFixed(1)}`;
+    if (i === active) accent = [d];
+    else lines.push(d);
+  }
+  return { lines, accent, nodes, boxes };
+}
+
+/** Event bus: producers publish above the bus, workers consume below it. */
+function events(r: () => number): Draw {
+  const lines: string[] = [];
+  const boxes: number[][] = [];
+  const nodes: [number, number, number][] = [];
+  const producers = 2 + Math.round(r());
+  const consumers = 3;
+  for (let i = 0; i < producers; i++) {
+    const x = 70 + i * (180 / (producers - 1));
+    boxes.push([x - 24, 30, 48, 26]);
+    lines.push(`M${x} 56V100`);
+    nodes.push([x, 100, 3]);
+  }
+  for (let i = 0; i < consumers; i++) {
+    const x = 80 + i * 80 + Math.round(r() * 10);
+    boxes.push([x - 24, 144, 48, 26]);
+    lines.push(`M${x} 100V144`);
+  }
+  return { lines, accent: ['M30 100H290'], nodes, boxes };
+}
+
+/** Multi-tenant platform: gateway → shared services → isolated tenant partitions. */
+function tenancy(r: () => number): Draw {
+  const tenants = 3 + Math.round(r());
+  const boxes: number[][] = [
+    [30, 80, 44, 40],
+    [110, 40, 70, 120],
+  ];
+  const lines = ['M74 100H110'];
+  const accent: string[] = [];
+  const h = (130 - (tenants - 1) * 8) / tenants;
+  const active = Math.floor(r() * tenants);
+  for (let i = 0; i < tenants; i++) {
+    const y = 35 + i * (h + 8);
+    boxes.push([220, y, 70, h]);
+    const d = `M180 ${(y + h / 2).toFixed(1)}H220`;
+    (i === active ? accent : lines).push(d);
+  }
+  for (let k = 1; k < 4; k++) lines.push(`M110 ${40 + k * 30}H180`);
+  return { lines, accent, nodes: [], boxes };
+}
+
 const DRAW: Record<Motif, (r: () => number) => Draw> = {
   network,
   vision,
@@ -121,21 +209,28 @@ const DRAW: Record<Motif, (r: () => number) => Draw> = {
   modules,
   device,
   browser,
+  pipeline,
+  agents,
+  events,
+  tenancy,
 };
 
 export function ProjectSchematic({
   slug,
   category,
+  motif: override,
   index,
   caption,
 }: {
   slug: string;
   category: string | null;
+  /** CMS motif override (Phase 14); unknown values fall back to the category motif. */
+  motif?: string | null;
   index: number;
-  /** Visible, translated disclosure ("Schematic · no published imagery"). */
+  /** Visible, translated disclosure (architecture schematic / conceptual system diagram). */
   caption: string;
 }) {
-  const motif = motifOf(category);
+  const motif = motifOf(category, override);
   const d = DRAW[motif](seeded(hash(slug)));
   return (
     <figure className="project-schematic flex h-full flex-col gap-2">

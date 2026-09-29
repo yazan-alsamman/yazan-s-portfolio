@@ -54,3 +54,105 @@ export const publishCertificatesWithoutFiles = true;
 
 /** The owner wants the CV published as web content without a file (no PDF is fabricated). */
 export const publishWebCv = true;
+
+/* -------------------------------------------------------------------------------------------- *
+ * Phase 13 — owner-approved content authority decisions (2026-09-29, approved by the owner in
+ * the Phase 13 working session; docs/reports/PHASE_13_CONTENT_REVIEW.md). Every statement below
+ * is sourced from content the owner had already published in the CMS; nothing is new fact.
+ * -------------------------------------------------------------------------------------------- */
+
+export const PHASE13_DECISIONS_DATE = '2026-09-29';
+
+/**
+ * Profile short bio (replaces "Dedicated and detail-oriented developer … mobile and web
+ * applications …"). Sources: Profile title; Experience (CTO, VegaCORE); project texts — AI project
+ * management architecture (LLM task generation, greedy assignment), Breast Tumor Diagnosis
+ * ("AI-powered medical diagnosis tool"), Robot Obstacles Avoidance ("fuzzy system and neural
+ * networks"), and the full-stack architecture of the AI project management system.
+ */
+export const ownerShortBio =
+  'Artificial Intelligence Engineer and CTO at VegaCORE. I build intelligent systems — LLM-driven task generation and assignment, AI-assisted medical diagnosis, and fuzzy-logic and neural-network robot navigation — together with the software infrastructure around them.';
+
+type OwnerSkill = {
+  name: string;
+  category: 'ai-ml' | 'backend' | 'frontend' | 'databases';
+  displayOrder: number;
+  /** Where the owner's own published text names it. */
+  source: string;
+};
+
+const AI_PM = 'ai-intelligence-project-management-system';
+const ROBOT = 'robot-obstacles-avoidance-system';
+const AI_PM_ARCH = 'AI Intelligence Project Management System — architecture text';
+
+/** AI techniques named in the owner's project texts (created only if missing; never ratings). */
+export const ownerAiSkills: OwnerSkill[] = [
+  {
+    name: 'Large language models',
+    category: 'ai-ml',
+    displayOrder: 1,
+    source: `${AI_PM_ARCH} (Groq API, Mistral 7B, Qwen 2.5)`,
+  },
+  {
+    name: 'Neural networks',
+    category: 'ai-ml',
+    displayOrder: 2,
+    source: `${AI_PM_ARCH} (custom neural network); Robot Obstacles Avoidance title/summary`,
+  },
+  {
+    name: 'Fuzzy logic',
+    category: 'ai-ml',
+    displayOrder: 3,
+    source: 'Robot Obstacles Avoidance System — title/summary ("fuzzy system")',
+  },
+  {
+    name: 'FAISS vector retrieval',
+    category: 'ai-ml',
+    displayOrder: 4,
+    source: `${AI_PM_ARCH} (FAISS retrieval system)`,
+  },
+  {
+    name: 'Expert systems',
+    category: 'ai-ml',
+    displayOrder: 5,
+    source: `${AI_PM_ARCH} (expert system for task classification)`,
+  },
+  {
+    name: 'Algorithm design',
+    category: 'ai-ml',
+    displayOrder: 6,
+    source: `${AI_PM_ARCH} (greedy algorithm for optimal task assignment)`,
+  },
+];
+
+/** Technologies named in the AI project management architecture text ("Key technologies: …"). */
+export const ownerTechnologies: OwnerSkill[] = [
+  { name: 'Node.js', category: 'backend', displayOrder: 140, source: AI_PM_ARCH },
+  { name: 'Express.js', category: 'backend', displayOrder: 150, source: AI_PM_ARCH },
+  { name: 'FastAPI', category: 'backend', displayOrder: 160, source: AI_PM_ARCH },
+  { name: 'MongoDB', category: 'databases', displayOrder: 170, source: AI_PM_ARCH },
+  { name: 'Next.js', category: 'frontend', displayOrder: 180, source: AI_PM_ARCH },
+  { name: 'React', category: 'frontend', displayOrder: 190, source: AI_PM_ARCH },
+];
+
+/**
+ * Project → technologies, in display order (techniques first). Existing links are kept; these are
+ * added. A project's technologies are what makes it appear as a skill's evidence.
+ */
+export const ownerProjectTechnologies: Record<string, string[]> = {
+  [AI_PM]: [
+    'Large language models',
+    'Neural networks',
+    'FAISS vector retrieval',
+    'Expert systems',
+    'Algorithm design',
+    'Node.js',
+    'Express.js',
+    'FastAPI',
+    'MongoDB',
+    'Next.js',
+    'React',
+    'Flutter',
+  ],
+  [ROBOT]: ['Fuzzy logic', 'Neural networks'],
+};

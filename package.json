@@ -27,6 +27,7 @@
     "cms:import-portrait": "payload run src/cms/scripts/import-portrait.ts",
     "cms:import-legacy": "payload run src/cms/scripts/import-legacy.ts",
     "cms:apply-owner": "payload run src/cms/scripts/apply-owner-content.ts",
+    "cms:apply-phase14": "payload run src/cms/scripts/apply-phase14-content.ts",
     "cms:verify-legacy": "payload run src/cms/scripts/verify-legacy.ts",
     "test:cms": "vitest run --config vitest.cms.config.mts",
     "seo:share-images": "node scripts/generate-share-images.mjs",

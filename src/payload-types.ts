@@ -217,6 +217,21 @@ export interface Project {
     };
     [k: string]: unknown;
   } | null;
+  constraints?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   architecture?: {
     root: {
       type: string;
@@ -233,7 +248,55 @@ export interface Project {
     [k: string]: unknown;
   } | null;
   /**
-   * Verified outcomes only — no estimated or unverifiable metrics.
+   * Models, inference, retrieval, classification, planning or control logic.
+   */
+  intelligence?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  decisions?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  challenges?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Verified outcomes only — no estimated or unverifiable metrics. For a Concept project this is shown as “Design objective”.
    */
   results?: {
     root: {
@@ -300,6 +363,23 @@ export interface Project {
       }[]
     | null;
   /**
+   * Drawing shown when the project has no published imagery. Empty: chosen from the category.
+   */
+  schematic?:
+    | (
+        | 'network'
+        | 'vision'
+        | 'kinematic'
+        | 'modules'
+        | 'device'
+        | 'browser'
+        | 'pipeline'
+        | 'agents'
+        | 'events'
+        | 'tenancy'
+      )
+    | null;
+  /**
    * Shown at the top of the page and in lists.
    */
   cover?: (number | null) | Media;
@@ -319,7 +399,15 @@ export interface Project {
     description?: string | null;
   };
   /**
-   * Show in “Selected work” on the homepage (first 6, by sort order).
+   * Shown publicly. A Concept project is labelled on its card and page, never presented as delivered work.
+   */
+  provenance?: ('verified' | 'concept' | 'experimental') | null;
+  /**
+   * Editorial weight in lists (flagships lead).
+   */
+  tier?: ('flagship' | 'strong' | 'supporting') | null;
+  /**
+   * Show in “Selected systems” on the homepage (by sort order).
    */
   featured?: boolean | null;
   /**
@@ -361,12 +449,15 @@ export interface Skill {
   label?: string | null;
   category:
     | 'ai-ml'
+    | 'architecture'
     | 'programming'
     | 'backend'
     | 'frontend'
     | 'mobile'
     | 'devops-infrastructure'
     | 'databases'
+    | 'security'
+    | 'practice'
     | 'tools'
     | 'other';
   /**
@@ -377,6 +468,10 @@ export interface Skill {
    * Lower numbers appear first.
    */
   displayOrder?: number | null;
+  /**
+   * Exploration skills are shown apart and never presented as professional experience.
+   */
+  provenance?: ('verified' | 'exploration') | null;
   evidence?: {
     docs?: (number | Project)[];
     hasNextPage?: boolean;
@@ -877,7 +972,11 @@ export interface ProjectsSelect<T extends boolean = true> {
   description?: T;
   problem?: T;
   solution?: T;
+  constraints?: T;
   architecture?: T;
+  intelligence?: T;
+  decisions?: T;
+  challenges?: T;
   results?: T;
   role?: T;
   category?: T;
@@ -897,6 +996,7 @@ export interface ProjectsSelect<T extends boolean = true> {
         kind?: T;
         id?: T;
       };
+  schematic?: T;
   cover?: T;
   gallery?: T;
   videoUrl?: T;
@@ -906,6 +1006,8 @@ export interface ProjectsSelect<T extends boolean = true> {
         title?: T;
         description?: T;
       };
+  provenance?: T;
+  tier?: T;
   featured?: T;
   sortOrder?: T;
   translationStatus?: T;
@@ -995,6 +1097,7 @@ export interface SkillsSelect<T extends boolean = true> {
   category?: T;
   proficiencyLabel?: T;
   displayOrder?: T;
+  provenance?: T;
   evidence?: T;
   translationStatus?: T;
   archived?: T;
@@ -1232,6 +1335,16 @@ export interface Profile {
     [k: string]: unknown;
   } | null;
   /**
+   * Short statements of how you engineer (About page). Principles, not achievements — no metrics or claims.
+   */
+  principles?:
+    | {
+        title: string;
+        body: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Optional. When empty, the About page uses the approved portrait.jpg.
    */
   portrait?: (number | null) | Media;
@@ -1343,6 +1456,13 @@ export interface ProfileSelect<T extends boolean = true> {
   title?: T;
   shortBio?: T;
   longBio?: T;
+  principles?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        id?: T;
+      };
   portrait?: T;
   socialLinks?:
     | T

@@ -30,11 +30,14 @@ export async function caseFiles(
     stack: t('stack'),
     source: t('dossier.source'),
     documented: t('dossier.documented'),
+    concept: t('concept'),
+    designObjective: tp('designObjective'),
     figures: Object.fromEntries(counts.map((n) => [String(n), t('dossier.figures', { count: n })])),
     sections: {
       problem: tp('problem'),
       solution: tp('approach'),
       architecture: tp('architecture'),
+      intelligence: tp('intelligence'),
       results: tp('results'),
     },
   };
@@ -47,8 +50,9 @@ export async function caseFiles(
           key={p.id}
           slug={p.slug}
           category={p.category}
+          motif={p.schematic}
           index={projects.indexOf(p) + 1}
-          caption={t('dossier.schematic')}
+          caption={t(p.provenance === 'concept' ? 'dossier.schematicConcept' : 'dossier.schematic')}
         />,
       ]),
   );

@@ -115,6 +115,7 @@ function skill(value: unknown): Skill | null {
     name: s.name,
     label: s.label ?? null,
     category: s.category,
+    provenance: s.provenance ?? 'verified',
   });
   return parsed.success ? parsed.data : null;
 }
@@ -137,6 +138,9 @@ export async function fetchProfile({ payload, locale }: Read): Promise<Profile |
     portrait: image(doc.portrait, ['square', ...PUBLIC_SOURCE_ORDER]),
     email: doc.email ?? null,
     socialLinks: (doc.socialLinks ?? []).map((l) => ({ network: l.network, url: l.url })),
+    principles: (doc.principles ?? [])
+      .filter((x) => x?.title && x?.body)
+      .map((x) => ({ title: x.title, body: x.body })),
   });
   if (!parsed.success) {
     report(payload, `profile (${locale})`, parsed.error);
@@ -178,12 +182,15 @@ function toSummary(p: PayloadProject): unknown {
     technologies: (p.technologies ?? []).map(skill).filter((s): s is Skill => s !== null),
     seo: { title: p.seo?.title, description: p.seo?.description },
     updatedAt: p.updatedAt,
+    provenance: p.provenance ?? 'verified',
+    tier: p.tier ?? 'supporting',
+    schematic: p.schematic ?? null,
     dossier: {
       // The year a project is dated by: its stated end, else its stated start — never updatedAt.
       year: (p.timeline?.end ?? p.timeline?.start)?.slice(0, 4) ?? null,
       source: (p.links ?? []).some((l) => l?.kind === 'repository' && Boolean(l.url)),
       figures: (p.gallery ?? []).length,
-      sections: (['problem', 'solution', 'architecture', 'results'] as const).filter(
+      sections: (['problem', 'solution', 'architecture', 'intelligence', 'results'] as const).filter(
         (k) => richTextOrNull(p[k]) !== null,
       ),
     },
@@ -238,6 +245,10 @@ export async function fetchProjectBySlug({ payload, locale }: Read, slug: string
       solution: richTextOrNull(doc.solution),
       architecture: richTextOrNull(doc.architecture),
       results: richTextOrNull(doc.results),
+      constraints: richTextOrNull(doc.constraints),
+      intelligence: richTextOrNull(doc.intelligence),
+      decisions: richTextOrNull(doc.decisions),
+      challenges: richTextOrNull(doc.challenges),
     },
   });
   if (!parsed.success) {
@@ -398,6 +409,7 @@ export async function fetchSkills({ payload, locale }: Read): Promise<SkillDetai
       name: doc.name,
       label: doc.label ?? null,
       category: doc.category,
+      provenance: doc.provenance ?? 'verified',
       proficiencyLabel: doc.proficiencyLabel ?? null,
       evidence: joinedProjects(doc.evidence),
     });

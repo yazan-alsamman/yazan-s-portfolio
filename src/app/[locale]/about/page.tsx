@@ -8,7 +8,10 @@ import {
   getProfile,
   getProjects,
   getRouteAvailability,
+  getSkills,
 } from '@/content/repository';
+import { env } from '@/lib/env';
+import { profilePageStructuredData, serializeJsonLd } from '@/lib/seo/structured-data';
 import { orderedDisciplines } from '@/lib/disciplines';
 import { gateContentRoute } from '@/lib/route-gate';
 import { contentRouteMetadata, pageIdentity } from '@/lib/seo/page-metadata';
@@ -18,6 +21,8 @@ import { RichText } from '@/components/content/RichText';
 import { PageIntro } from '@/components/pages/PageIntro';
 import { DevEmptyNotice } from '@/components/pages/DevEmptyNotice';
 import { EducationList } from '@/components/portfolio/EducationList';
+import { SelectedWork } from '@/components/portfolio/SelectedWork';
+import { SystemsMap } from '@/components/portfolio/SystemsMap';
 // The owner-approved authoritative portrait (D-5), the same asset the approved Phase 3 scene uses.
 import portrait from '../../../../portrait.jpg';
 
@@ -38,19 +43,23 @@ export default async function AboutPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const available = await gateContentRoute(locale, 'about');
-  const [t, nav, common, tc, identity, profile, education, experience, projects, routes] = await Promise.all([
-    getTranslations({ locale, namespace: 'pages.about' }),
-    getTranslations({ locale, namespace: 'nav' }),
-    getTranslations({ locale, namespace: 'pages.common' }),
-    getTranslations({ locale, namespace: 'pages.categories' }),
-    pageIdentity(locale),
-    getProfile(locale),
-    getEducation(locale),
-    getExperience(locale),
-    getProjects(locale),
-    getRouteAvailability(locale),
-  ]);
+  const [t, nav, common, tc, identity, profile, education, experience, projects, routes, skills] =
+    await Promise.all([
+      getTranslations({ locale, namespace: 'pages.about' }),
+      getTranslations({ locale, namespace: 'nav' }),
+      getTranslations({ locale, namespace: 'pages.common' }),
+      getTranslations({ locale, namespace: 'pages.categories' }),
+      pageIdentity(locale),
+      getProfile(locale),
+      getEducation(locale),
+      getExperience(locale),
+      getProjects(locale),
+      getRouteAvailability(locale),
+      getSkills(locale),
+    ]);
   const role = experience[0];
+  const flagships = projects.filter((p) => p.featured && p.provenance !== 'concept');
+  const verifiedSkills = skills.filter((s) => s.provenance !== 'exploration');
   const degree = education[0];
   const focus = orderedDisciplines(projects.filter((p) => p.featured).map((p) => p.category)).map((c) =>
     tc(c),
@@ -67,12 +76,28 @@ export default async function AboutPage({ params }: Props) {
         ]
       : []),
     ...(focus.length ? [[t('facts.focus'), focus.join(' · ')] as [string, string]] : []),
+    // Technical profile (Phase 14): measured from the CMS, never typed in.
+    ...(flagships.length
+      ? [[t('facts.systems'), String(flagships.length).padStart(2, '0')] as [string, string]]
+      : []),
+    ...(verifiedSkills.length
+      ? [[t('facts.skills'), String(verifiedSkills.length).padStart(2, '0')] as [string, string]]
+      : []),
   ];
+  const principles = profile?.principles ?? [];
   const onward = (['projects', 'experience', 'cv', 'contact'] as const).filter((key) => routes[key]);
   const portraitAlt = t('portraitAlt', { name: identity.name });
 
   return (
     <>
+      {available ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: serializeJsonLd(profilePageStructuredData(env.siteUrl, locale, '/about', t('title'))),
+          }}
+        />
+      ) : null}
       <PageIntro label={identity.name} title={t('title')} lead={profile?.shortBio ?? undefined} />
       {available ? (
         <Container className="flex flex-col gap-20 pb-24 md:pb-32">
@@ -128,6 +153,34 @@ export default async function AboutPage({ params }: Props) {
               <RichText value={profile?.longBio} headingBase={2} className="text-lead" />
             </div>
           </div>
+
+          {/* Evidence (Phase 13): the owner's featured work, each with its verified discipline, year
+              and technology count — what the profile above rests on. */}
+          <SelectedWork locale={locale} projects={projects} id="about-work" />
+
+          {principles.length ? (
+            // Engineering principles (Phase 14, CMS Profile): statements of practice, not claims.
+            <section aria-labelledby="about-principles">
+              <h2 id="about-principles" className="mb-6 font-label text-label text-fg-muted uppercase">
+                {t('principles')}
+              </h2>
+              <ol className="matrix sm:grid-cols-2 lg:grid-cols-3">
+                {principles.map((p, i) => (
+                  <li key={p.title} className="flex flex-col gap-3 p-5 md:p-6">
+                    <p className="flex items-baseline gap-3">
+                      <span aria-hidden="true" className="font-mono text-meta text-accent-text tabular-nums">
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <span className="font-display text-lead font-medium text-fg-strong">{p.title}</span>
+                    </p>
+                    <p className="text-body text-fg-muted">{p.body}</p>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ) : null}
+
+          <SystemsMap locale={locale} projects={projects} id="about-systems" />
 
           {education.length ? (
             <section aria-labelledby="about-education">

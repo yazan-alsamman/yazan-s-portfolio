@@ -7,6 +7,7 @@ import {
   getEducation,
   getExperience,
   getProfile,
+  getProjects,
   getSkills,
 } from '@/content/repository';
 import { socialLabel } from '@/lib/social';
@@ -21,6 +22,7 @@ import { EducationList } from '@/components/portfolio/EducationList';
 import { SkillGroups } from '@/components/portfolio/SkillGroups';
 import { layerLabels } from '@/components/portfolio/case-files';
 import { CertificateList } from '@/components/portfolio/CertificateList';
+import { SelectedWork } from '@/components/portfolio/SelectedWork';
 
 type Props = { params: Promise<{ locale: Locale }> };
 
@@ -54,6 +56,7 @@ export default async function CvPage({ params }: Props) {
     education,
     skills,
     certificates,
+    projects,
   ] = await Promise.all([
     getTranslations({ locale, namespace: 'pages.cv' }),
     getTranslations({ locale, namespace: 'pages.experience' }),
@@ -69,6 +72,7 @@ export default async function CvPage({ params }: Props) {
     getEducation(locale),
     getSkills(locale),
     getCertificates(locale),
+    getProjects(locale),
   ]);
   const social = profile?.socialLinks ?? [];
   const categoryLabels = Object.fromEntries(
@@ -124,6 +128,7 @@ export default async function CvPage({ params }: Props) {
               />
             </section>
           ) : null}
+          <SelectedWork locale={locale} projects={projects} id="cv-work" />
           {education.length ? (
             <section aria-labelledby="cv-education">
               <h2 id="cv-education" className="mb-6 font-label text-label text-fg-muted uppercase">
@@ -143,7 +148,7 @@ export default async function CvPage({ params }: Props) {
                 {t('skills')}
               </h2>
               <SkillGroups
-                skills={skills}
+                skills={skills.filter((s) => s.provenance !== 'exploration')}
                 categoryLabels={categoryLabels}
                 layerLabels={await layerLabels(locale)}
                 labels={{ evidence: '' }}

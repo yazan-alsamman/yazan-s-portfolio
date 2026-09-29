@@ -17,13 +17,19 @@ export function SkillGroups({
   categoryLabels,
   layerLabels,
   labels,
+  certificates = {},
   headingLevel = 2,
   compact = false,
 }: {
   skills: SkillDetail[];
   categoryLabels: Record<string, string>;
   layerLabels: Record<Layer, string>;
-  labels: { evidence: string };
+  labels: { evidence: string; certified?: string };
+  /**
+   * Phase 13: certificates whose name is exactly the skill's name (case-insensitive), keyed by
+   * skill id — supporting evidence from the register, never a fuzzy or inferred match.
+   */
+  certificates?: Record<string, { name: string; issuer: string }[]>;
   headingLevel?: 2 | 3;
   compact?: boolean;
 }) {
@@ -98,6 +104,14 @@ export function SkillGroups({
                           </p>
                           {!compact && skill.proficiencyLabel ? (
                             <p className="text-sm text-fg-muted">{skill.proficiencyLabel}</p>
+                          ) : null}
+                          {!compact && labels.certified && certificates[skill.id]?.length ? (
+                            <p className="mt-1 text-sm text-fg-muted">
+                              {labels.certified}{' '}
+                              <span className="text-fg">
+                                {certificates[skill.id]!.map((c) => `${c.name} · ${c.issuer}`).join(', ')}
+                              </span>
+                            </p>
                           ) : null}
                           {!compact && skill.evidence.length ? (
                             <p className="mt-1 text-sm text-fg-muted">

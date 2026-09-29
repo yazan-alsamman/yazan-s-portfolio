@@ -34,6 +34,8 @@ export const ProfileSchema = z.object({
   socialLinks: z.array(
     z.object({ network: z.enum(['github', 'linkedin', 'instagram', 'other']), url: z.url() }),
   ),
+  /** Phase 14: engineering principles (About) — statements of practice, never achievements. */
+  principles: z.array(z.object({ title: nonEmpty, body: nonEmpty })).optional(),
 });
 export type Profile = z.infer<typeof ProfileSchema>;
 
@@ -55,6 +57,8 @@ export const SkillSchema = z.object({
   name: nonEmpty,
   label: z.string().nullable(),
   category: nonEmpty,
+  /** Phase 14: `exploration` = studied / concept systems only — never shown as professional experience. */
+  provenance: z.enum(['verified', 'exploration']).optional(),
 });
 export type Skill = z.infer<typeof SkillSchema>;
 
@@ -72,6 +76,14 @@ export const ProjectSummarySchema = z.object({
   seo: z.object({ title: nonEmpty, description: nonEmpty }),
   updatedAt: z.string(),
   /**
+   * Phase 14 evidence status: `verified` (delivered / public evidence), `concept` (a design study,
+   * labelled everywhere, never presented as delivered work), `experimental`. Absent = verified.
+   */
+  provenance: z.enum(['verified', 'concept', 'experimental']).optional(),
+  tier: z.enum(['flagship', 'strong', 'supporting']).optional(),
+  /** Drawing motif for projects without imagery (CMS override of the category default). */
+  schematic: z.string().nullable().optional(),
+  /**
    * Case-file facts derived from the same CMS document (Phase 12). Every value is computed from
    * authored fields — nothing is inferred: `year` only from a stated timeline date, `source` only
    * from a repository link, `sections` only for narrative fields that have content.
@@ -84,7 +96,7 @@ export const ProjectSummarySchema = z.object({
         .nullable(),
       source: z.boolean(),
       figures: z.number().int().nonnegative(),
-      sections: z.array(z.enum(['problem', 'solution', 'architecture', 'results'])),
+      sections: z.array(z.enum(['problem', 'solution', 'architecture', 'intelligence', 'results'])),
     })
     .optional(),
 });
@@ -112,6 +124,10 @@ export const ProjectSchema = ProjectSummarySchema.extend({
     solution: RichTextSchema,
     architecture: RichTextSchema,
     results: RichTextSchema,
+    constraints: RichTextSchema.optional(),
+    intelligence: RichTextSchema.optional(),
+    decisions: RichTextSchema.optional(),
+    challenges: RichTextSchema.optional(),
   }),
 });
 export type Project = z.infer<typeof ProjectSchema>;

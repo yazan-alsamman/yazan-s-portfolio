@@ -30,8 +30,40 @@ describe('discipline taxonomy (Phase 12)', () => {
   });
 
   it('places every CMS skill category in exactly one stack layer', () => {
-    for (const c of ['frontend', 'programming', 'backend', 'mobile', 'databases', 'other', 'ai-ml', 'tools'])
+    for (const c of [
+      'frontend',
+      'programming',
+      'backend',
+      'mobile',
+      'databases',
+      'other',
+      'ai-ml',
+      'tools',
+      'architecture',
+      'devops-infrastructure',
+      'security',
+      'practice',
+    ])
       expect(LAYER_ORDER).toContain(layerOf(c));
+  });
+
+  it('follows the expertise model: intelligence → systems → application → data → infrastructure → discipline', () => {
+    expect(layerOf('ai-ml')).toBe('intelligence');
+    expect(layerOf('architecture')).toBe('systems');
+    expect(layerOf('backend')).toBe('systems');
+    expect(layerOf('frontend')).toBe('application');
+    expect(layerOf('databases')).toBe('data');
+    expect(layerOf('devops-infrastructure')).toBe('infrastructure');
+    expect(layerOf('security')).toBe('discipline');
+    expect(layerOf('practice')).toBe('discipline');
+    expect(LAYER_ORDER.at(-1)).toBe('adjacent');
+  });
+
+  it('lets the CMS schematic override win, ignoring unknown values', () => {
+    expect(motifOf('software-engineering', 'tenancy')).toBe('tenancy');
+    expect(motifOf('artificial-intelligence', 'pipeline')).toBe('pipeline');
+    expect(motifOf('robotics', 'not-a-motif')).toBe('kinematic');
+    expect(motifOf('web', null)).toBe('browser');
   });
 
   it('picks a discipline-specific schematic motif', () => {

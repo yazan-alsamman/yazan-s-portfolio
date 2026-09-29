@@ -154,6 +154,32 @@ const PROJECT_CATEGORIES = [
   'other',
 ];
 
+const SCHEMATIC_MOTIFS = [
+  'network',
+  'vision',
+  'kinematic',
+  'modules',
+  'device',
+  'browser',
+  'pipeline',
+  'agents',
+  'events',
+  'tenancy',
+];
+
+const SCHEMATIC_LABELS: Record<string, string> = {
+  network: 'Neural / layered network',
+  vision: 'Vision grid with detections',
+  kinematic: 'Robot kinematics and sensing',
+  modules: 'Modules and interfaces',
+  device: 'Mobile device',
+  browser: 'Web application',
+  pipeline: 'Data / inference pipeline',
+  agents: 'Agent orchestration',
+  events: 'Event stream and workers',
+  tenancy: 'Multi-tenant platform',
+};
+
 const CATEGORY_LABELS: Record<string, string> = {
   'artificial-intelligence': 'Artificial intelligence',
   'machine-learning': 'Machine learning',
@@ -208,13 +234,28 @@ export const Projects = editorial('projects', {
             { name: 'description', label: 'Overview', type: 'richText', localized: true },
             { name: 'problem', label: 'Problem', type: 'richText', localized: true },
             { name: 'solution', label: 'Approach', type: 'richText', localized: true },
+            { name: 'constraints', label: 'Constraints', type: 'richText', localized: true },
             { name: 'architecture', label: 'Architecture', type: 'richText', localized: true },
+            {
+              name: 'intelligence',
+              label: 'Intelligence layer',
+              type: 'richText',
+              localized: true,
+              admin: {
+                description: 'Models, inference, retrieval, classification, planning or control logic.',
+              },
+            },
+            { name: 'decisions', label: 'Engineering decisions', type: 'richText', localized: true },
+            { name: 'challenges', label: 'Challenges', type: 'richText', localized: true },
             {
               name: 'results',
               label: 'Results',
               type: 'richText',
               localized: true,
-              admin: { description: 'Verified outcomes only — no estimated or unverifiable metrics.' },
+              admin: {
+                description:
+                  'Verified outcomes only — no estimated or unverifiable metrics. For a Concept project this is shown as “Design objective”.',
+              },
             },
           ],
         },
@@ -261,6 +302,16 @@ export const Projects = editorial('projects', {
               admin: { description: 'Optional: the role/organization this project was done in.' },
             },
             linksField,
+            {
+              name: 'schematic',
+              label: 'Schematic motif',
+              type: 'select',
+              options: labelled(SCHEMATIC_MOTIFS, SCHEMATIC_LABELS),
+              admin: {
+                description:
+                  'Drawing shown when the project has no published imagery. Empty: chosen from the category.',
+              },
+            },
           ],
         },
         {
@@ -299,12 +350,39 @@ export const Projects = editorial('projects', {
       ],
     },
     {
+      name: 'provenance',
+      label: 'Evidence status',
+      type: 'select',
+      defaultValue: 'verified',
+      options: [
+        { label: 'Verified work (delivered / public evidence)', value: 'verified' },
+        { label: 'Concept system (design study — not delivered work)', value: 'concept' },
+        { label: 'Experimental (exploration, incomplete)', value: 'experimental' },
+      ],
+      admin: {
+        position: 'sidebar',
+        description:
+          'Shown publicly. A Concept project is labelled on its card and page, never presented as delivered work.',
+      },
+    },
+    {
+      name: 'tier',
+      type: 'select',
+      defaultValue: 'supporting',
+      options: [
+        { label: 'Flagship', value: 'flagship' },
+        { label: 'Strong', value: 'strong' },
+        { label: 'Supporting', value: 'supporting' },
+      ],
+      admin: { position: 'sidebar', description: 'Editorial weight in lists (flagships lead).' },
+    },
+    {
       name: 'featured',
       type: 'checkbox',
       defaultValue: false,
       admin: {
         position: 'sidebar',
-        description: 'Show in “Selected work” on the homepage (first 6, by sort order).',
+        description: 'Show in “Selected systems” on the homepage (by sort order).',
       },
     },
     {
@@ -445,18 +523,24 @@ export const Certificates = editorial('certificates', {
 
 export const SKILL_CATEGORIES = [
   'ai-ml',
+  'architecture',
   'programming',
   'backend',
   'frontend',
   'mobile',
   'devops-infrastructure',
   'databases',
+  'security',
+  'practice',
   'tools',
   'other',
 ];
 
 const SKILL_CATEGORY_LABELS: Record<string, string> = {
   'ai-ml': 'AI / ML',
+  architecture: 'Architecture',
+  security: 'Security',
+  practice: 'Engineering practice',
   programming: 'Programming',
   backend: 'Backend',
   frontend: 'Frontend',
@@ -514,6 +598,19 @@ export const Skills = editorial('skills', {
       type: 'number',
       defaultValue: 100,
       admin: { description: 'Lower numbers appear first.' },
+    },
+    {
+      name: 'provenance',
+      label: 'Evidence status',
+      type: 'select',
+      defaultValue: 'verified',
+      options: [
+        { label: 'Verified (used in delivered or public work)', value: 'verified' },
+        { label: 'Exploration (studied / concept systems only)', value: 'exploration' },
+      ],
+      admin: {
+        description: 'Exploration skills are shown apart and never presented as professional experience.',
+      },
     },
     {
       name: 'evidence',
