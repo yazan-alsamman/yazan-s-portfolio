@@ -71,6 +71,9 @@ export type Phase14Project = {
   seo?: { title: string; description: string };
   /** Where every statement comes from (stored in the admin-only source note). */
   source: string;
+  /** Phase 15: genuine screenshots (src/cms/content/media) — cover and gallery, in order. */
+  cover?: { file: string; alt: string; source: string };
+  gallery?: { file: string; alt: string; source: string }[];
 };
 
 export type Phase14Skill = {
@@ -701,8 +704,8 @@ export const phase14Projects: Phase14Project[] = [
       'This website: a bilingual, CMS-driven portfolio with a scroll-driven WebGL narrative, strict performance budgets, accessibility and SEO verification, and a containerised VPS deployment.',
     category: 'web',
     provenance: 'verified',
-    tier: 'flagship',
-    featured: true,
+    tier: 'strong', // Phase 15: the clinic system took its flagship place
+    featured: false,
     sortOrder: 70,
     schematic: 'browser',
     source: 'This repository (yazan-s-portfolio) and its phase reports (docs/reports).',
@@ -1058,34 +1061,6 @@ export const phase14Projects: Phase14Project[] = [
   },
 
   /* --------------------------------------------- Supporting -------------------------------------- */
-  {
-    slug: 'zina-personal-brand-website',
-    title: 'Zina Almokri — Personal Brand Website',
-    summary:
-      'An editorial personal-brand website for a beauty creator, planned in sixteen phases from content intelligence and information architecture to technical SEO, performance and accessibility.',
-    category: 'web',
-    provenance: 'verified',
-    tier: 'supporting',
-    featured: false,
-    sortOrder: 160,
-    schematic: 'browser',
-    source: 'Public repository zina (README).',
-    sections: {
-      description: [
-        'A personal website for the beauty creator Zina Almokri: product testing and reviews, a portfolio of work, brand collaborations and press enquiries — with a strict rule that no biography, audience figures, awards or product claims are invented.',
-      ],
-      solution: [
-        'The build is divided into sixteen phases — discovery, information architecture, visual direction, UX architecture, design system, front-end foundation, signature experience, content system, SEO foundation, technical SEO, performance, accessibility, analytics, QA and security, search launch and handover — each closed with a report before the next begins.',
-      ],
-    },
-    technologies: ['TypeScript'],
-    links: [{ label: 'Repository', url: REPO('zina'), kind: 'repository' }],
-    seo: {
-      title: 'Zina Almokri — personal brand website',
-      description:
-        'An editorial personal-brand website planned phase by phase, from content architecture to technical SEO, performance and accessibility.',
-    },
-  },
   {
     slug: 'car-renting-application',
     provenance: 'verified',

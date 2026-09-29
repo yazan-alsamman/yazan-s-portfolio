@@ -1,5 +1,6 @@
 /**
- * `pnpm cms:apply-phase14` — applies the Phase 14 content (src/cms/content/phase14-content.ts).
+ * `pnpm cms:apply-content` (alias `cms:apply-phase14`) — applies the portfolio content of Phase 14
+ * (src/cms/content/phase14-content.ts) and Phase 15 (phase15-content.ts: client projects + screenshots).
  * Idempotent; English only (no Arabic is written or approved). Take a database backup first.
  * Touches ONLY: the Profile long biography and principles; the skills listed there (created when
  * missing, otherwise only their category and evidence status change); two skill re-categorisations;
@@ -8,6 +9,11 @@
  */
 import { getPayload } from 'payload';
 import config from '@payload-config';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { lexical } from '../content/lexical';
+import { phase15Projects, phase15Skills, type MediaSpec } from '../content/phase15-content';
 import {
   PHASE14_DATE,
   phase14LongBio,
@@ -19,42 +25,6 @@ import {
 
 const note = (what: string) =>
   `Phase 14 (${PHASE14_DATE}): ${what}. docs/content/PORTFOLIO_CONTENT_MATRIX.md`;
-
-const TEXT_CODE = 16;
-
-/** Paragraphs → Lexical; `inline code` becomes code-formatted text. */
-function lexical(paragraphs: string[]) {
-  return {
-    root: {
-      type: 'root',
-      format: '' as const,
-      indent: 0,
-      version: 1,
-      direction: 'ltr' as const,
-      children: paragraphs.map((text) => ({
-        type: 'paragraph',
-        format: '' as const,
-        indent: 0,
-        version: 1,
-        direction: 'ltr' as const,
-        textFormat: 0,
-        children: text
-          .split('`')
-          .map((part, i) => ({ part, code: i % 2 === 1 }))
-          .filter(({ part }) => part.length > 0)
-          .map(({ part, code }) => ({
-            type: 'text',
-            text: part,
-            format: code ? TEXT_CODE : 0,
-            detail: 0,
-            mode: 'normal',
-            style: '',
-            version: 1,
-          })),
-      })),
-    },
-  };
-}
 
 const payload = await getPayload({ config });
 const done: string[] = [];
@@ -83,7 +53,7 @@ async function findSkill(name: string) {
 
 let created = 0;
 let updated = 0;
-for (const s of phase14Skills) {
+for (const s of [...phase14Skills, ...phase15Skills]) {
   const existing = await findSkill(s.name);
   if (existing) {
     await payload.update({
@@ -136,7 +106,29 @@ const skillId = async (name: string) => {
 
 let projectsCreated = 0;
 let projectsUpdated = 0;
-for (const p of phase14Projects) {
+// Screenshots (Phase 15): files in src/cms/content/media, deduplicated by SHA-256 (create-only).
+const MEDIA_DIR = path.resolve('src/cms/content/media');
+async function mediaId(m: MediaSpec): Promise<number> {
+  const data = readFileSync(path.join(MEDIA_DIR, m.file));
+  const sha = createHash('sha256').update(data).digest('hex');
+  const found = await payload.find({
+    collection: 'media',
+    where: { sourceNote: { contains: sha } },
+    limit: 1,
+    overrideAccess: true,
+  });
+  if (found.docs[0]) return Number(found.docs[0].id);
+  const doc = await payload.create({
+    collection: 'media',
+    locale: 'en',
+    data: { alt: m.alt, sourceNote: note(`screenshot ${m.file} — ${m.source}; SHA-256 ${sha}`) },
+    file: { data, mimetype: 'image/webp', name: m.file, size: data.length },
+    overrideAccess: true,
+  });
+  return Number(doc.id);
+}
+
+for (const p of [...phase14Projects, ...phase15Projects]) {
   const found = await payload.find({
     collection: 'projects',
     where: { slug: { equals: p.slug } },
@@ -163,6 +155,12 @@ for (const p of phase14Projects) {
   for (const [key, paragraphs] of Object.entries(p.sections ?? {})) data[key] = lexical(paragraphs);
   if (p.links) data.links = p.links;
   if (p.seo) data.seo = p.seo;
+  if (p.cover) data.cover = await mediaId(p.cover);
+  if (p.gallery) {
+    const ids: number[] = [];
+    for (const m of p.gallery) ids.push(await mediaId(m));
+    data.gallery = ids;
+  }
 
   if (p.technologies) {
     const ids: number[] = [];
@@ -210,5 +208,5 @@ for (const p of phase14Projects) {
 }
 done.push(`projects: ${projectsCreated} created, ${projectsUpdated} updated`);
 
-payload.logger.info(`Phase 14 content applied: ${done.join(' · ')}`);
+payload.logger.info(`Portfolio content applied (phases 14–15): ${done.join(' · ')}`);
 process.exit(0);
