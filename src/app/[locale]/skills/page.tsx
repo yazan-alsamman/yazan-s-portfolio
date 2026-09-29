@@ -8,6 +8,7 @@ import { Container } from '@/components/ui/layout';
 import { PageIntro } from '@/components/pages/PageIntro';
 import { DevEmptyNotice } from '@/components/pages/DevEmptyNotice';
 import { SkillGroups } from '@/components/portfolio/SkillGroups';
+import { layerLabels } from '@/components/portfolio/case-files';
 
 type Props = { params: Promise<{ locale: Locale }> };
 
@@ -20,12 +21,13 @@ export default async function SkillsPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const available = await gateContentRoute(locale, 'skills');
-  const [t, tc, common, identity, skills] = await Promise.all([
+  const [t, tc, common, identity, skills, layers] = await Promise.all([
     getTranslations({ locale, namespace: 'pages.skills' }),
     getTranslations({ locale, namespace: 'pages.categories' }),
     getTranslations({ locale, namespace: 'pages.common' }),
     pageIdentity(locale),
     getSkills(locale),
+    layerLabels(locale),
   ]);
   const categoryLabels = Object.fromEntries(
     [...new Set(skills.map((s) => s.category))].map((c) => [c, tc(c)]),
@@ -36,7 +38,12 @@ export default async function SkillsPage({ params }: Props) {
       <PageIntro label={identity.name} title={t('title')} lead={t('lead')} />
       {available ? (
         <Container className="pb-24 md:pb-32">
-          <SkillGroups skills={skills} categoryLabels={categoryLabels} labels={{ evidence: t('evidence') }} />
+          <SkillGroups
+            skills={skills}
+            categoryLabels={categoryLabels}
+            layerLabels={layers}
+            labels={{ evidence: t('evidence') }}
+          />
         </Container>
       ) : (
         <DevEmptyNotice message={common('devEmpty')} />

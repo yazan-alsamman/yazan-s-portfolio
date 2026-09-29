@@ -144,6 +144,47 @@ function brushedTexture() {
   return t;
 }
 
+/**
+ * Substrate roughness with laser marking (Phase 12): brushed base plus a matte etched pin-1
+ * indicator, a keep-out ring and a part designation along the exposed edge — how a real package
+ * reads under a highlight (etched areas scatter; the glossy coat does not). Roughness only: no
+ * colour map, so the substrate keeps its program and the marking appears only in the light.
+ */
+function substrateTexture() {
+  const size = 256;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext('2d')!;
+  const rand = seeded(9);
+  ctx.fillStyle = 'rgb(112,112,112)';
+  ctx.fillRect(0, 0, size, size);
+  for (let i = 0; i < 700; i++) {
+    const v = 86 + Math.floor(rand() * 60);
+    ctx.fillStyle = `rgba(${v},${v},${v},0.45)`;
+    ctx.fillRect(0, Math.floor(rand() * size), size, 1);
+  }
+  ctx.fillStyle = 'rgb(236,236,236)';
+  ctx.strokeStyle = 'rgb(236,236,236)';
+  // Pin-1 indicator: a triangle in one corner of the exposed edge.
+  ctx.beginPath();
+  ctx.moveTo(10, 10);
+  ctx.lineTo(24, 10);
+  ctx.lineTo(10, 24);
+  ctx.closePath();
+  ctx.fill();
+  // Keep-out ring just outside the heat-spreader footprint (1.9 of 2.4).
+  const inset = Math.round(((2.4 - 1.98) / 2 / 2.4) * size);
+  ctx.lineWidth = 1;
+  ctx.strokeRect(inset + 0.5, inset + 0.5, size - inset * 2 - 1, size - inset * 2 - 1);
+  // Part designation along the near edge.
+  ctx.font = '600 9px ui-monospace, Consolas, monospace';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('INFERENCE CORE   IC-01', 34, size - 11);
+  const t = new THREE.CanvasTexture(canvas);
+  t.anisotropy = 4;
+  return t;
+}
+
 const LAYERS = [
   { size: 1.62, y: 0.3, explode: 0.42, seed: 71, density: 1.2 },
   { size: 1.26, y: 0.39, explode: 0.84, seed: 73, density: 1 },
@@ -192,11 +233,12 @@ export function InferenceCore({ tier }: { tier: Exclude<Tier, 'static'> }) {
   const assets = useMemo(() => {
     const rich = tier !== 'low';
     const brushed = brushedTexture();
+    const etched = substrateTexture();
     const substrateMat = new THREE.MeshPhysicalMaterial({
       color: '#1b2027',
       metalness: 0.82,
       roughness: 0.44,
-      roughnessMap: brushed,
+      roughnessMap: etched,
       clearcoat: 0.35,
       clearcoatRoughness: 0.35,
       transparent: true,
@@ -209,10 +251,12 @@ export function InferenceCore({ tier }: { tier: Exclude<Tier, 'static'> }) {
       transparent: true,
     });
     // Contacts: a restrained warm nickel-gold — the one warm note in the object.
+    // Same shader features as steelMat (brushed roughness map) → one shared program, one fewer compile.
     const contactMat = new THREE.MeshPhysicalMaterial({
       color: '#bfae8a',
       metalness: 1,
       roughness: 0.28,
+      roughnessMap: brushed,
       transparent: true,
     });
     const traces = LAYERS.map((l) => traceTexture(l.seed, l.density));
@@ -308,6 +352,7 @@ export function InferenceCore({ tier }: { tier: Exclude<Tier, 'static'> }) {
 
     return {
       brushed,
+      etched,
       traces,
       substrateMat,
       steelMat,
@@ -324,6 +369,7 @@ export function InferenceCore({ tier }: { tier: Exclude<Tier, 'static'> }) {
   useEffect(
     () => () => {
       assets.brushed.dispose();
+      assets.etched.dispose();
       assets.traces.forEach((t) => t.dispose());
       [assets.substrateMat, assets.steelMat, assets.contactMat, assets.lensMat, assets.irisMat].forEach((m) =>
         m.dispose(),
@@ -350,7 +396,7 @@ export function InferenceCore({ tier }: { tier: Exclude<Tier, 'static'> }) {
     return () => window.removeEventListener('pointermove', onMove);
   }, [tier, pointer, invalidate]);
 
-  useFrame((_, delta) => {
+  useFrame(({ size }, delta) => {
     const g = root.current;
     if (!g || !tilt.current || !sensor.current || !frame.current) return;
     const p = sceneState.p;
@@ -362,7 +408,7 @@ export function InferenceCore({ tier }: { tier: Exclude<Tier, 'static'> }) {
     g.visible = visible > 0.002;
     if (!g.visible) return;
 
-    const pose = corePose(p, sceneState.portrait, rtl);
+    const pose = corePose(p, sceneState.portrait, rtl, size.width / size.height);
     g.position.set(pose.position[0], pose.position[1], pose.position[2]);
     g.rotation.set(pose.rotation[0], pose.rotation[1], pose.rotation[2]);
     g.scale.setScalar(pose.scale);

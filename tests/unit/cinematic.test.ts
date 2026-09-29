@@ -201,6 +201,16 @@ describe('inference core choreography (design evolution)', () => {
     expect(corePose(1, false, true).position[0]).toBeCloseTo(0, 10);
   });
 
+  it('pulls the hero toward the centre on narrow landscape screens, never moving the dock', () => {
+    const wide = corePose(0, false, false, 1.6);
+    const narrow = corePose(0, false, false, 1.33);
+    expect(narrow.position[0]).toBeLessThan(wide.position[0]);
+    expect(narrow.position[0]).toBeGreaterThan(0);
+    expect(narrow.scale).toBeLessThan(wide.scale);
+    expect(corePose(1, false, false, 1.33).position[0]).toBeCloseTo(0, 10);
+    expect(corePose(0, false, false, 2)).toEqual(wide);
+  });
+
   it('holds a distinct hero framing per orientation (a composition, not a crop)', () => {
     expect(LANDSCAPE_CORE[0]!.position[0]).toBeGreaterThan(2); // beside the identity
     expect(PORTRAIT_CORE[0]!.position[0]).toBe(0); // centred above it

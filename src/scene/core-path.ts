@@ -15,16 +15,16 @@ type CoreKey = CorePose & { act: ActId; at: number };
 const DOCKED: CorePose = { position: [0, -1.99, 0], rotation: [0, Math.PI / 4, 0], scale: 0.62 };
 
 export const LANDSCAPE_CORE: readonly CoreKey[] = [
-  { act: 'arrival', at: 0, position: [3.55, 1.05, 6.4], rotation: [0.6, -0.62, 0], scale: 1.08 },
-  { act: 'arrival', at: 1, position: [3.1, -0.45, 4.2], rotation: [0.5, -0.9, 0], scale: 0.9 },
+  { act: 'arrival', at: 0, position: [3.55, 1.95, 6.4], rotation: [0.6, -0.62, 0], scale: 1.04 },
+  { act: 'arrival', at: 1, position: [3.1, 0.15, 4.2], rotation: [0.5, -0.9, 0], scale: 0.9 },
   { act: 'ignition', at: 0.55, position: [3.9, -1.6, 1.3], rotation: [0.36, 0.1, 0], scale: 0.72 },
   { act: 'ignition', at: 1, ...DOCKED },
 ];
 
 /** Portrait viewports: centred above the identity, closer to the lens (a composition, not a crop). */
 export const PORTRAIT_CORE: readonly CoreKey[] = [
-  { act: 'arrival', at: 0, position: [0, 2.6, 11.5], rotation: [0.66, -0.62, 0], scale: 1.1 },
-  { act: 'arrival', at: 1, position: [0, 1.1, 9.4], rotation: [0.5, -0.9, 0], scale: 0.95 },
+  { act: 'arrival', at: 0, position: [0, 3.35, 11.5], rotation: [0.66, -0.62, 0], scale: 0.98 },
+  { act: 'arrival', at: 1, position: [0, 1.7, 9.4], rotation: [0.5, -0.9, 0], scale: 0.9 },
   { act: 'ignition', at: 0.55, position: [0.2, 0.9, 3.4], rotation: [0.5, 0.1, 0], scale: 0.8 },
   { act: 'ignition', at: 1, ...DOCKED },
 ];
@@ -52,9 +52,24 @@ const mirror = (pose: CorePose): CorePose => ({
  * Core pose at progress p. Deterministic: same p → same pose. Holds the docked pose after
  * ignition. `rtl` mirrors the path (the docked pose at the origin is symmetric either way).
  */
-export function corePose(p: number, portrait: boolean, rtl = false): CorePose {
-  const pose = sampleCore(p, portrait);
+export function corePose(p: number, portrait: boolean, rtl = false, aspect = 1.6): CorePose {
+  const pose = fitLandscape(sampleCore(p, portrait), portrait, aspect);
   return rtl ? mirror(pose) : pose;
+}
+
+/**
+ * Narrow landscape viewports (e.g. 1024×768, aspect 1.33) show less of the frame's width: the
+ * off-centre hero pose is pulled toward the centre and slightly reduced so the core stays whole
+ * and clear of the identity. The dock (x = 0) is unaffected; wide screens (≥ 1.6) are unchanged.
+ */
+function fitLandscape(pose: CorePose, portrait: boolean, aspect: number): CorePose {
+  if (portrait || aspect >= 1.6) return pose;
+  const k = Math.min(1, Math.max(0.72, (aspect - 1) / 0.6));
+  return {
+    position: [pose.position[0] * k, pose.position[1], pose.position[2]],
+    rotation: pose.rotation,
+    scale: pose.scale * (0.78 + 0.22 * k),
+  };
 }
 
 function sampleCore(p: number, portrait: boolean): CorePose {

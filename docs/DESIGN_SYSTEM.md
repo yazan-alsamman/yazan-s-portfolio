@@ -96,3 +96,16 @@ All visual effects must have:
 - keyboard support,
 - readable contrast,
 - reduced-motion behavior.
+
+## Instrument language (design evolution + Phase 12)
+
+The portfolio reads as an engineering document. Implemented in `src/app/globals.css` §12–13.
+
+- **Technical voice:** `font-mono` / `text-meta` (system monospace, 12 px floor) for indices, counts, dates, stacks.
+- **Figures:** `.fig-marks` registration corners instead of rounded cards; covers and schematics sit inside them.
+- **Case files** (`ProjectRow`): rail (index, discipline, year) → title link → summary → stack → dossier line (source, figures, documented sections). Every fact is derived from the CMS document (`ProjectSummary.dossier`).
+- **Schematics** (`ProjectSchematic`): deterministic, discipline-specific drawings for projects without published imagery; always captioned "Schematic · no published imagery". Never a fake screenshot.
+- **Capability stack** (`SkillGroups`): CMS categories placed in architecture layers (`src/lib/disciplines.ts`), numbered L1… from the foundation; no ratings or bars.
+- **Registers:** `.matrix` hairline cells; certificates grouped by issuer with measured counts.
+- **Hero sheet:** identity lower-left, Inference Core upper-right, title block (figure caption + CMS counts) beneath the core, registration marks at the frame corners.
+- **Motion:** feedback only (hairline draw, mark widening, ≤ 6 px magnetic pull on primary buttons, press scale); all static under reduced motion; nothing depends on hover.

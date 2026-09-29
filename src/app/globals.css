@@ -807,7 +807,7 @@
     pointer-events: none;
     inline-size: min(33vw, 34rem);
     inset-inline-end: max(var(--gutter), calc((100vw - 90rem) / 2 + var(--gutter)));
-    inset-block-start: 16svh;
+    inset-block-start: 9svh;
     color: var(--fg-muted);
     transition: opacity var(--duration-reveal) var(--ease-standard);
   }
@@ -821,10 +821,10 @@
   }
   @media (width < 64rem) {
     .cine-core {
-      inline-size: min(88vw, 30rem);
+      inline-size: min(78vw, 28rem);
       inset-inline: 0;
       margin-inline: auto;
-      inset-block-start: 13svh;
+      inset-block-start: 10svh;
     }
   }
   .cine-core :is(.sc-face, .sc-die) {
@@ -870,21 +870,6 @@
     font-family: var(--font-mono-stack);
     font-size: 12px;
     letter-spacing: 0.08em;
-  }
-
-  /* Hero readout: verified CMS counts, set like an instrument panel. */
-  .readout {
-    display: flex;
-    flex-wrap: wrap; /* 320px: wraps instead of overflowing */
-    column-gap: clamp(1.25rem, 0.6rem + 2.4vw, 3rem);
-    row-gap: 1rem;
-  }
-  .readout > div {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    padding-inline-start: 0.75rem;
-    border-inline-start: 1px solid var(--line-strong);
   }
 
   /* Figure registration marks: four corner ticks instead of a rounded box (engineering drawing). */
@@ -1033,5 +1018,94 @@
   }
   to {
     transform: scaleX(1);
+  }
+}
+
+/* ---------- 13. Phase 12 — project schematics & hero sheet ----------
+   Schematics are drawings of a discipline for projects without published imagery (captioned as
+   such). Token colours only, so they belong to both themes; the accent path is the one signal. */
+@layer components {
+  .project-schematic svg {
+    color: var(--fg-muted);
+  }
+  .project-schematic .sch-line {
+    stroke: color-mix(in oklab, var(--fg-muted) 38%, transparent);
+    stroke-width: 1;
+  }
+  .project-schematic .sch-box {
+    stroke: var(--line-strong);
+    stroke-width: 1;
+    fill: color-mix(in oklab, var(--surface) 70%, transparent);
+  }
+  .project-schematic .sch-accent {
+    stroke: var(--accent);
+    stroke-width: 1.5;
+    stroke-linecap: square;
+  }
+  .project-schematic .sch-node {
+    fill: var(--bg-raised);
+    stroke: var(--fg-muted);
+    stroke-width: 1;
+  }
+  .project-schematic .sch-label {
+    fill: var(--fg-muted);
+    font-family: var(--font-mono-stack);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+  /* Signal feedback: the accent path brightens with the row's hover/focus (colour only). */
+  .project-schematic .sch-accent {
+    transition: stroke-width var(--duration-base) var(--ease-standard);
+  }
+  :is(.group\/row:hover, .group\/row:focus-within) .project-schematic .sch-accent {
+    stroke-width: 2.25;
+  }
+
+  /* Hero title block: the drawing sheet's label plate under the core (counts are CMS data). */
+  .title-block {
+    border: 1px solid var(--line-strong);
+    background-color: rgb(7 9 13 / 0.55);
+  }
+  .title-block dl > div + div {
+    border-inline-start: 1px solid var(--line);
+  }
+  /* The plate belongs to the arrival frame: on large screens it yields as it rises into the
+     core's column while scrolling (scroll-driven, compositor-only; static under reduced motion). */
+  @media (width >= 64rem) and (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .title-block {
+        animation: plate-yield linear both;
+        animation-timeline: view();
+        animation-range: cover 28% cover 42%;
+      }
+    }
+  }
+  /* Sheet frame: registration marks at the four corners of the arrival frame (large screens). */
+  @media (width >= 64rem) {
+    .hero-sheet::before {
+      content: '';
+      position: absolute;
+      inset: calc(var(--header-height) + 2rem) calc(var(--gutter) - 1rem) 3.5svh;
+      pointer-events: none;
+      --m: rgb(99 107 117 / 0.7);
+      background:
+        linear-gradient(var(--m), var(--m)) top left / 14px 1px no-repeat,
+        linear-gradient(var(--m), var(--m)) top left / 1px 14px no-repeat,
+        linear-gradient(var(--m), var(--m)) top right / 14px 1px no-repeat,
+        linear-gradient(var(--m), var(--m)) top right / 1px 14px no-repeat,
+        linear-gradient(var(--m), var(--m)) bottom left / 14px 1px no-repeat,
+        linear-gradient(var(--m), var(--m)) bottom left / 1px 14px no-repeat,
+        linear-gradient(var(--m), var(--m)) bottom right / 14px 1px no-repeat,
+        linear-gradient(var(--m), var(--m)) bottom right / 1px 14px no-repeat;
+    }
+  }
+}
+
+@keyframes plate-yield {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }

@@ -178,6 +178,15 @@ function toSummary(p: PayloadProject): unknown {
     technologies: (p.technologies ?? []).map(skill).filter((s): s is Skill => s !== null),
     seo: { title: p.seo?.title, description: p.seo?.description },
     updatedAt: p.updatedAt,
+    dossier: {
+      // The year a project is dated by: its stated end, else its stated start — never updatedAt.
+      year: (p.timeline?.end ?? p.timeline?.start)?.slice(0, 4) ?? null,
+      source: (p.links ?? []).some((l) => l?.kind === 'repository' && Boolean(l.url)),
+      figures: (p.gallery ?? []).length,
+      sections: (['problem', 'solution', 'architecture', 'results'] as const).filter(
+        (k) => richTextOrNull(p[k]) !== null,
+      ),
+    },
   };
 }
 

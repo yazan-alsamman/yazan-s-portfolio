@@ -4,12 +4,15 @@ import type { Locale } from '@/i18n/routing';
 import { homeSectionOrder, type HomeSectionKey } from '@/content/types';
 import {
   getCertificates,
+  getEducation,
   getExperience,
   getProfile,
   getProjects,
   getRouteAvailability,
   getSkills,
 } from '@/content/repository';
+import { orderedDisciplines } from '@/lib/disciplines';
+import { caseFiles, layerLabels } from './case-files';
 import { Container } from '@/components/ui/layout';
 import { ButtonLink, TextLink } from '@/components/ui/actions';
 import { cn } from '@/lib/cn';
@@ -35,21 +38,39 @@ export async function HomeSections({
   locale: Locale;
   sections: Record<HomeSectionKey, boolean>;
 }) {
-  const [t, tc, tx, tcert, common, contact, profile, projects, skills, experience, certificates, routes] =
-    await Promise.all([
-      getTranslations({ locale, namespace: 'pages.portfolio' }),
-      getTranslations({ locale, namespace: 'pages.categories' }),
-      getTranslations({ locale, namespace: 'pages.experience' }),
-      getTranslations({ locale, namespace: 'pages.certificates' }),
-      getTranslations({ locale, namespace: 'pages.common' }),
-      getTranslations({ locale, namespace: 'pages.contact' }),
-      getProfile(locale),
-      getProjects(locale),
-      getSkills(locale),
-      getExperience(locale),
-      getCertificates(locale),
-      getRouteAvailability(locale),
-    ]);
+  const [
+    t,
+    tc,
+    tx,
+    tcert,
+    common,
+    contact,
+    tf,
+    layers,
+    profile,
+    projects,
+    skills,
+    experience,
+    certificates,
+    education,
+    routes,
+  ] = await Promise.all([
+    getTranslations({ locale, namespace: 'pages.portfolio' }),
+    getTranslations({ locale, namespace: 'pages.categories' }),
+    getTranslations({ locale, namespace: 'pages.experience' }),
+    getTranslations({ locale, namespace: 'pages.certificates' }),
+    getTranslations({ locale, namespace: 'pages.common' }),
+    getTranslations({ locale, namespace: 'pages.contact' }),
+    getTranslations({ locale, namespace: 'pages.about.facts' }),
+    layerLabels(locale),
+    getProfile(locale),
+    getProjects(locale),
+    getSkills(locale),
+    getExperience(locale),
+    getCertificates(locale),
+    getEducation(locale),
+    getRouteAvailability(locale),
+  ]);
   const name = profile?.name ?? '';
   const index = (key: HomeSectionKey) => String(homeSectionOrder.indexOf(key) + 1).padStart(2, '0');
   const featured = projects.filter((p) => p.featured).slice(0, 6);
@@ -59,6 +80,38 @@ export async function HomeSections({
   );
   const of = (shown: number, total: number) =>
     t('shownOf', { shown: String(shown).padStart(2, '0'), total: String(total).padStart(2, '0') });
+  const caseData = await caseFiles(locale, featured);
+
+  // Introduction spec sheet — only facts the CMS states.
+  const role = experience[0];
+  const degree = education[0];
+  const degreeYear = degree?.endDate?.slice(0, 4) ?? null;
+  const disciplines = orderedDisciplines(projects.map((p) => p.category)).map(
+    (c) => `${tc(c)} ${String(projects.filter((p) => p.category === c).length).padStart(2, '0')}`,
+  );
+  const facts: [string, ReactNode][] = [
+    ...(role ? [[tf('role'), `${role.title} · ${role.organization}`] as [string, ReactNode]] : []),
+    ...(degree
+      ? [
+          [tf('education'), [degree.degree, degree.institution, degreeYear].filter(Boolean).join(' · ')] as [
+            string,
+            ReactNode,
+          ],
+        ]
+      : []),
+    ...(disciplines.length
+      ? [
+          [
+            tf('disciplines'),
+            <ul key="d" className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-meta text-fg">
+              {disciplines.map((d) => (
+                <li key={d}>{d}</li>
+              ))}
+            </ul>,
+          ] as [string, ReactNode],
+        ]
+      : []),
+  ];
 
   return (
     <>
@@ -69,15 +122,28 @@ export async function HomeSections({
           title={t('introduction')}
           variant="label"
         >
-          <div className="grid gap-8 md:grid-cols-12">
-            <p className="font-display text-h2 font-medium text-fg-strong md:col-span-10 xl:col-span-9">
-              {profile.shortBio}
-            </p>
-            {routes.about ? (
-              <p className="text-lead md:col-span-12">
-                <TextLink href="/about">{t('readMore', { name })}</TextLink>
-              </p>
+          {/* Phase 12: the introduction leads with verified facts (role, education, disciplines
+              measured from the published projects) as an engineer's spec sheet; the owner's bio
+              follows as the narrative. Nothing here is typed in — every value is CMS data. */}
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
+            {facts.length ? (
+              <dl className="flex flex-col gap-6 lg:col-span-4">
+                {facts.map(([term, value]) => (
+                  <div key={term} className="flex flex-col gap-2 border-t border-line pt-4">
+                    <dt className="font-label text-label text-fg-muted uppercase">{term}</dt>
+                    <dd className="text-body text-fg-strong">{value}</dd>
+                  </div>
+                ))}
+              </dl>
             ) : null}
+            <div className="flex flex-col gap-8 lg:col-span-7 lg:col-start-6">
+              <p className="font-display text-h3 font-medium text-fg-strong">{profile.shortBio}</p>
+              {routes.about ? (
+                <p className="text-lead">
+                  <TextLink href="/about">{t('readMore', { name })}</TextLink>
+                </p>
+              ) : null}
+            </div>
           </div>
         </HomeSection>
       ) : null}
@@ -98,7 +164,8 @@ export async function HomeSections({
                 index={i + 1}
                 headingLevel={3}
                 categoryLabel={p.category ? tc(p.category) : null}
-                stackLabel={t('stack')}
+                labels={caseData.labels}
+                figure={caseData.figures[p.id]}
               />
             ))}
           </div>
@@ -116,6 +183,7 @@ export async function HomeSections({
           <SkillGroups
             skills={skills}
             categoryLabels={skillCategories}
+            layerLabels={layers}
             labels={{ evidence: '' }}
             headingLevel={3}
             compact

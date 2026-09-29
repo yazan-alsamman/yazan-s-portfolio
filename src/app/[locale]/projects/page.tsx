@@ -8,6 +8,8 @@ import { Container } from '@/components/ui/layout';
 import { PageIntro } from '@/components/pages/PageIntro';
 import { DevEmptyNotice } from '@/components/pages/DevEmptyNotice';
 import { ProjectIndex } from '@/components/portfolio/ProjectIndex';
+import { caseFiles } from '@/components/portfolio/case-files';
+import { orderedDisciplines } from '@/lib/disciplines';
 
 type Props = { params: Promise<{ locale: Locale }> };
 
@@ -20,17 +22,17 @@ export default async function ProjectsPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const available = await gateContentRoute(locale, 'projects');
-  const [t, tc, common, portfolio, identity, projects] = await Promise.all([
+  const [t, tc, common, identity, projects] = await Promise.all([
     getTranslations({ locale, namespace: 'pages.projects' }),
     getTranslations({ locale, namespace: 'pages.categories' }),
     getTranslations({ locale, namespace: 'pages.common' }),
-    getTranslations({ locale, namespace: 'pages.portfolio' }),
     pageIdentity(locale),
     getProjects(locale),
   ]);
-  const categoryLabels = Object.fromEntries(
-    [...new Set(projects.map((p) => p.category).filter((c): c is string => !!c))].map((c) => [c, tc(c)]),
-  );
+  // Disciplines in display order: intelligent systems first (presentation only; CMS order within).
+  const categories = orderedDisciplines(projects.map((p) => p.category));
+  const categoryLabels = Object.fromEntries(categories.map((c) => [c, tc(c)]));
+  const caseData = await caseFiles(locale, projects);
   const counts = Object.fromEntries(
     Array.from({ length: projects.length + 1 }, (_, n) => [String(n), t('count', { count: n })]),
   );
@@ -42,8 +44,10 @@ export default async function ProjectsPage({ params }: Props) {
         <Container className="pb-24 md:pb-32">
           <ProjectIndex
             projects={projects}
+            categories={categories}
             categoryLabels={categoryLabels}
-            labels={{ filter: t('filter'), all: t('all'), counts, stack: portfolio('stack') }}
+            labels={{ filter: t('filter'), all: t('all'), counts, case: caseData.labels }}
+            figures={caseData.figures}
           />
         </Container>
       ) : (

@@ -35,6 +35,7 @@ export default async function CertificatesPage({ params }: Props) {
           <CertificateList
             items={items}
             locale={locale}
+            grouped
             labels={{
               issued: t('issued'),
               credentialId: t('credentialId'),

@@ -71,8 +71,25 @@ export const ProjectSummarySchema = z.object({
   technologies: z.array(SkillSchema),
   seo: z.object({ title: nonEmpty, description: nonEmpty }),
   updatedAt: z.string(),
+  /**
+   * Case-file facts derived from the same CMS document (Phase 12). Every value is computed from
+   * authored fields — nothing is inferred: `year` only from a stated timeline date, `source` only
+   * from a repository link, `sections` only for narrative fields that have content.
+   */
+  dossier: z
+    .object({
+      year: z
+        .string()
+        .regex(/^\d{4}$/)
+        .nullable(),
+      source: z.boolean(),
+      figures: z.number().int().nonnegative(),
+      sections: z.array(z.enum(['problem', 'solution', 'architecture', 'results'])),
+    })
+    .optional(),
 });
 export type ProjectSummary = z.infer<typeof ProjectSummarySchema>;
+export type ProjectDossier = NonNullable<ProjectSummary['dossier']>;
 
 /** A published, locale-approved project referenced from another entity (evidence, experience). */
 export const ProjectRefSchema = z.object({ slug: ProjectSummarySchema.shape.slug, title: nonEmpty });

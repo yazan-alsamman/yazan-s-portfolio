@@ -21,6 +21,8 @@ import { ButtonLink, TextLink } from '@/components/ui/actions';
 import { RichText } from '@/components/content/RichText';
 import { Breadcrumbs } from '@/components/pages/Breadcrumbs';
 import { ProjectRow } from '@/components/portfolio/ProjectRow';
+import { ProjectSchematic } from '@/components/portfolio/ProjectSchematic';
+import { caseFiles } from '@/components/portfolio/case-files';
 import { TechnologyList } from '@/components/portfolio/TechnologyList';
 
 type Props = { params: Promise<{ locale: Locale; slug: string }> };
@@ -95,6 +97,7 @@ export default async function ProjectPage({ params }: Props) {
   const category = project.category ? tc(project.category) : null;
   const period = formatPeriod(project.timeline.start, project.timeline.end, locale, null);
   const relatedProjects = related(project, all);
+  const caseData = await caseFiles(locale, relatedProjects);
   const body: [string, unknown][] = [
     [t('overview'), project.body.description],
     [t('problem'), project.body.problem],
@@ -152,7 +155,14 @@ export default async function ProjectPage({ params }: Props) {
           </div>
           {details.length ? (
             // Spec sheet: every cell is a CMS field; empty fields produce no cell.
-            <dl className={cn('matrix sm:grid-cols-2', details.length > 2 && 'lg:grid-cols-4')}>
+            <dl
+              className={cn(
+                'matrix',
+                details.length === 1 && 'max-w-sm',
+                details.length > 1 && 'sm:grid-cols-2',
+                details.length > 2 && 'lg:grid-cols-4',
+              )}
+            >
               {details.map(([term, value]) => (
                 <div key={term} className="flex flex-col gap-2 p-5 md:p-6">
                   <dt className="font-label text-label text-fg-muted uppercase">{term}</dt>
@@ -179,7 +189,19 @@ export default async function ProjectPage({ params }: Props) {
             </div>
           </div>
         </Container>
-      ) : null}
+      ) : (
+        // No published imagery: the discipline schematic, captioned as a schematic (never a screenshot).
+        <Container className="pb-16">
+          <div className="fig-marks max-w-xl">
+            <ProjectSchematic
+              slug={project.slug}
+              category={project.category}
+              index={all.findIndex((p) => p.slug === project.slug) + 1}
+              caption={portfolio('dossier.schematic')}
+            />
+          </div>
+        </Container>
+      )}
 
       <Container className="flex flex-col pb-16">
         {body
@@ -254,7 +276,8 @@ export default async function ProjectPage({ params }: Props) {
                   index={i + 1}
                   headingLevel={3}
                   categoryLabel={p.category ? tc(p.category) : null}
-                  stackLabel={portfolio('stack')}
+                  labels={caseData.labels}
+                  figure={caseData.figures[p.id]}
                 />
               ))}
             </div>

@@ -1,27 +1,52 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { ProjectSummary } from '@/content/types';
 import { cn } from '@/lib/cn';
-import { ProjectRow } from './ProjectRow';
+import { ProjectRow, type CaseLabels } from './ProjectRow';
+
+const PARAM = 'discipline';
 
 /**
- * Projects index with a category filter (IA §2: client-side filter; every project is linked in
+ * Projects index with a discipline filter (IA §2: client-side filter; every project is linked in
  * plain HTML). The server render contains all rows; the filter only hides rows after hydration,
  * so crawlers and no-JS visitors always get the complete list. The filter appears only when
- * there are at least two categories to choose from.
+ * there are at least two disciplines. Phase 12: disciplines are listed in the server-provided
+ * order (intelligent systems first) and the active one is deep-linkable (`?discipline=`), kept in
+ * the URL with `replaceState` (no history spam, shareable, restored on load).
  */
 export function ProjectIndex({
   projects,
+  categories,
   categoryLabels,
   labels,
+  figures,
 }: {
   projects: ProjectSummary[];
+  /** Disciplines present, in display order (computed on the server). */
+  categories: string[];
   categoryLabels: Record<string, string>;
-  labels: { filter: string; all: string; counts: Record<string, string>; stack?: string };
+  labels: { filter: string; all: string; counts: Record<string, string>; case: CaseLabels };
+  /** Server-rendered schematics for projects without a cover, keyed by project id. */
+  figures: Record<string, ReactNode>;
 }) {
   const [active, setActive] = useState<string | null>(null);
-  const categories = [...new Set(projects.map((p) => p.category).filter((c): c is string => !!c))];
+
+  // Restore a deep-linked discipline after hydration (the server render is always unfiltered).
+  useEffect(() => {
+    const wanted = new URLSearchParams(window.location.search).get(PARAM);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- URL state exists only in the browser
+    if (wanted && categories.includes(wanted)) setActive(wanted);
+  }, [categories]);
+
+  const select = (category: string | null) => {
+    setActive(category);
+    const url = new URL(window.location.href);
+    if (category) url.searchParams.set(PARAM, category);
+    else url.searchParams.delete(PARAM);
+    window.history.replaceState(window.history.state, '', url);
+  };
+
   const visible = active ? projects.filter((p) => p.category === active) : projects;
   const countKey = String(visible.length);
 
@@ -37,7 +62,7 @@ export function ProjectIndex({
                   key={category ?? 'all'}
                   type="button"
                   aria-pressed={pressed}
-                  onClick={() => setActive(category)}
+                  onClick={() => select(category)}
                   className={cn(
                     'inline-flex min-h-11 items-center gap-2.5 rounded-sm border px-4 font-label text-sm',
                     'transition-colors duration-(--duration-base) ease-standard active:translate-y-px',
@@ -70,7 +95,8 @@ export function ProjectIndex({
             project={project}
             index={i + 1}
             categoryLabel={project.category ? (categoryLabels[project.category] ?? null) : null}
-            stackLabel={labels.stack}
+            labels={labels.case}
+            figure={figures[project.id]}
             className={visible.includes(project) ? undefined : 'hidden'}
           />
         ))}

@@ -9,29 +9,92 @@ import { TextLink } from '@/components/ui/actions';
  * verification). Names are shown exactly as authored (never translated blindly — IL-5);
  * a verification link appears only when the issuer provides one.
  */
+type Labels = { issued: string; credentialId: string; verify: string; viewPdf: string; externalHint: string };
+
 export function CertificateList({
   items,
   locale,
   labels,
   headingLevel = 2,
   compact = false,
+  grouped = false,
 }: {
   items: Certificate[];
   locale: Locale;
-  labels: { issued: string; credentialId: string; verify: string; viewPdf: string; externalHint: string };
+  labels: Labels;
   headingLevel?: 2 | 3;
   compact?: boolean;
+  /**
+   * Phase 12: group the register by issuer (CMS order of first appearance) — the issuer becomes
+   * the group heading and a measured count, entries keep one continuous register number.
+   */
+  grouped?: boolean;
 }) {
+  if (!grouped)
+    return <Register items={items} locale={locale} labels={labels} level={headingLevel} compact={compact} />;
+  const groups = new Map<string, Certificate[]>();
+  for (const item of items) groups.set(item.issuer, [...(groups.get(item.issuer) ?? []), item]);
   const H = `h${headingLevel}` as const;
+  const entries = [...groups.entries()];
+  const offsets = entries.map((_, gi) => entries.slice(0, gi).reduce((n, [, g]) => n + g.length, 0));
+  return (
+    <div className="flex flex-col gap-12">
+      {entries.map(([issuer, group], gi) => (
+        <section key={issuer} aria-labelledby={`issuer-${gi}`} className="flex flex-col gap-4">
+          <div className="flex items-baseline justify-between gap-4">
+            <H id={`issuer-${gi}`} className="font-display text-lead font-medium text-fg-strong">
+              {issuer}
+            </H>
+            <span aria-hidden="true" className="font-mono text-meta text-fg-muted tabular-nums">
+              {String(group.length).padStart(2, '0')}
+            </span>
+          </div>
+          <Register
+            items={group}
+            locale={locale}
+            labels={labels}
+            level={headingLevel === 2 ? 3 : 4}
+            compact={compact}
+            start={offsets[gi]}
+            showIssuer={false}
+          />
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function Register({
+  items,
+  locale,
+  labels,
+  level,
+  compact,
+  start = 0,
+  showIssuer = true,
+}: {
+  items: Certificate[];
+  locale: Locale;
+  labels: Labels;
+  level: 2 | 3 | 4;
+  compact: boolean;
+  start?: number;
+  showIssuer?: boolean;
+}) {
+  const H = `h${level}` as const;
   return (
     <ul className="matrix md:grid-cols-2">
       {items.map((item, i) => (
         <li key={item.id} className="spot flex flex-col gap-6 p-6 md:p-8">
           <div className="flex flex-col gap-3">
             <p className="flex items-baseline justify-between gap-4">
-              <span className="font-label text-label text-accent-text">{item.issuer}</span>
+              {showIssuer ? (
+                <span className="font-label text-label text-accent-text">{item.issuer}</span>
+              ) : (
+                <span />
+              )}
               <span aria-hidden="true" className="font-mono text-meta text-fg-muted tabular-nums">
-                {String(i + 1).padStart(2, '0')}
+                {String(start + i + 1).padStart(2, '0')}
               </span>
             </p>
             <H className="font-display text-h3 font-medium text-fg-strong">{item.name}</H>

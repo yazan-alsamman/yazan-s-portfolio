@@ -110,7 +110,10 @@
     },
     "portraitAlt": "Portrait of {name}",
     "figure": "Fig. 01 — Inference core: sensor, silicon, substrate",
-    "readout": "Portfolio index"
+    "readout": "Portfolio index",
+    "cta": "Explore the work",
+    "focus": "Focus",
+    "role": "Role"
   },
   "pages": {
     "common": {
@@ -127,7 +130,15 @@
       "description": "About {name}, {title}: background, education and work.",
       "education": "Education",
       "continue": "Continue",
-      "portraitAlt": "Portrait of {name}"
+      "portraitAlt": "Portrait of {name}",
+      "profile": "Profile",
+      "facts": {
+        "title": "Title",
+        "role": "Role",
+        "education": "Education",
+        "focus": "Focus",
+        "disciplines": "Disciplines"
+      }
     },
     "projects": {
       "title": "Projects",
@@ -167,7 +178,16 @@
       "title": "Skills",
       "description": "Technical skills of {name}, {title}, linked to the projects that demonstrate them.",
       "lead": "Each skill links to the work that demonstrates it.",
-      "evidence": "Demonstrated in"
+      "evidence": "Demonstrated in",
+      "layers": {
+        "intelligence": "Intelligence",
+        "interfaces": "Interfaces",
+        "services": "Services",
+        "data": "Data",
+        "foundations": "Foundations",
+        "infrastructure": "Infrastructure",
+        "adjacent": "Adjacent disciplines"
+      }
     },
     "certificates": {
       "title": "Certificates",
@@ -215,7 +235,13 @@
         "intelligence": "Intelligence"
       },
       "stack": "Stack",
-      "shownOf": "{shown} of {total}"
+      "shownOf": "{shown} of {total}",
+      "dossier": {
+        "source": "Source",
+        "figures": "{count, plural, one {# figure} other {# figures}}",
+        "schematic": "Schematic · no published imagery",
+        "documented": "Documented"
+      }
     },
     "categories": {
       "artificial-intelligence": "Artificial intelligence",

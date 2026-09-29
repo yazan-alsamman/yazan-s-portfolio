@@ -19,6 +19,7 @@ import { DevEmptyNotice } from '@/components/pages/DevEmptyNotice';
 import { ExperienceList } from '@/components/portfolio/ExperienceList';
 import { EducationList } from '@/components/portfolio/EducationList';
 import { SkillGroups } from '@/components/portfolio/SkillGroups';
+import { layerLabels } from '@/components/portfolio/case-files';
 import { CertificateList } from '@/components/portfolio/CertificateList';
 
 type Props = { params: Promise<{ locale: Locale }> };
@@ -144,6 +145,7 @@ export default async function CvPage({ params }: Props) {
               <SkillGroups
                 skills={skills}
                 categoryLabels={categoryLabels}
+                layerLabels={await layerLabels(locale)}
                 labels={{ evidence: '' }}
                 headingLevel={3}
                 compact
@@ -160,6 +162,7 @@ export default async function CvPage({ params }: Props) {
                 locale={locale}
                 headingLevel={3}
                 compact
+                grouped
                 labels={{
                   issued: tcert('issued'),
                   credentialId: tcert('credentialId'),

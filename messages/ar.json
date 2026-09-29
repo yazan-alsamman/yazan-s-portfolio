@@ -110,7 +110,10 @@
     },
     "portraitAlt": "صورة شخصية لـ{name}",
     "figure": "الشكل 01 — نواة الاستدلال: مستشعر، سيليكون، ركيزة",
-    "readout": "فهرس الأعمال"
+    "readout": "فهرس الأعمال",
+    "cta": "استكشف الأعمال",
+    "focus": "مجالات التركيز",
+    "role": "الدور"
   },
   "pages": {
     "common": {
@@ -127,7 +130,15 @@
       "description": "نبذة عن {name}، {title}: الخلفية والتعليم والعمل.",
       "education": "التعليم",
       "continue": "متابعة",
-      "portraitAlt": "صورة شخصية لـ{name}"
+      "portraitAlt": "صورة شخصية لـ{name}",
+      "profile": "الملف المهني",
+      "facts": {
+        "title": "المسمى",
+        "role": "الدور",
+        "education": "التعليم",
+        "focus": "مجالات التركيز",
+        "disciplines": "التخصصات"
+      }
     },
     "projects": {
       "title": "المشاريع",
@@ -167,7 +178,16 @@
       "title": "المهارات",
       "description": "المهارات التقنية لـ{name}، {title}، مرتبطة بالمشاريع التي تثبتها.",
       "lead": "ترتبط كل مهارة بالعمل الذي يثبتها.",
-      "evidence": "تظهر في"
+      "evidence": "تظهر في",
+      "layers": {
+        "intelligence": "الذكاء",
+        "interfaces": "الواجهات",
+        "services": "الخدمات",
+        "data": "البيانات",
+        "foundations": "الأسس",
+        "infrastructure": "البنية التحتية",
+        "adjacent": "مجالات مجاورة"
+      }
     },
     "certificates": {
       "title": "الشهادات",
@@ -215,7 +235,13 @@
         "intelligence": "ذكاء"
       },
       "stack": "التقنيات",
-      "shownOf": "{shown} من {total}"
+      "shownOf": "{shown} من {total}",
+      "dossier": {
+        "source": "الشيفرة المصدرية",
+        "figures": "{count, plural, zero {لا أشكال} one {شكل واحد} two {شكلان} few {# أشكال} many {# شكلًا} other {# شكل}}",
+        "schematic": "مخطط توضيحي · لا توجد صور منشورة",
+        "documented": "موثّق"
+      }
     },
     "categories": {
       "artificial-intelligence": "الذكاء الصنعي",

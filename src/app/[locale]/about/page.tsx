@@ -2,7 +2,14 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { Locale } from '@/i18n/routing';
-import { getEducation, getProfile, getRouteAvailability } from '@/content/repository';
+import {
+  getEducation,
+  getExperience,
+  getProfile,
+  getProjects,
+  getRouteAvailability,
+} from '@/content/repository';
+import { orderedDisciplines } from '@/lib/disciplines';
 import { gateContentRoute } from '@/lib/route-gate';
 import { contentRouteMetadata, pageIdentity } from '@/lib/seo/page-metadata';
 import { Container } from '@/components/ui/layout';
@@ -31,15 +38,36 @@ export default async function AboutPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const available = await gateContentRoute(locale, 'about');
-  const [t, nav, common, identity, profile, education, routes] = await Promise.all([
+  const [t, nav, common, tc, identity, profile, education, experience, projects, routes] = await Promise.all([
     getTranslations({ locale, namespace: 'pages.about' }),
     getTranslations({ locale, namespace: 'nav' }),
     getTranslations({ locale, namespace: 'pages.common' }),
+    getTranslations({ locale, namespace: 'pages.categories' }),
     pageIdentity(locale),
     getProfile(locale),
     getEducation(locale),
+    getExperience(locale),
+    getProjects(locale),
     getRouteAvailability(locale),
   ]);
+  const role = experience[0];
+  const degree = education[0];
+  const focus = orderedDisciplines(projects.filter((p) => p.featured).map((p) => p.category)).map((c) =>
+    tc(c),
+  );
+  const facts: [string, string][] = [
+    ...(profile?.title ? [[t('facts.title'), profile.title] as [string, string]] : []),
+    ...(role ? [[t('facts.role'), `${role.title} · ${role.organization}`] as [string, string]] : []),
+    ...(degree
+      ? [
+          [
+            t('facts.education'),
+            [degree.degree, degree.institution, degree.endDate?.slice(0, 4)].filter(Boolean).join(' · '),
+          ] as [string, string],
+        ]
+      : []),
+    ...(focus.length ? [[t('facts.focus'), focus.join(' · ')] as [string, string]] : []),
+  ];
   const onward = (['projects', 'experience', 'cv', 'contact'] as const).filter((key) => routes[key]);
   const portraitAlt = t('portraitAlt', { name: identity.name });
 
@@ -80,7 +108,23 @@ export default async function AboutPage({ params }: Props) {
                 ) : null}
               </figcaption>
             </figure>
-            <div className="md:col-span-7 md:col-start-6">
+            <div className="flex flex-col gap-12 md:col-span-7 md:col-start-6">
+              {/* Engineer's profile sheet (Phase 12): verified CMS facts only; empty facts omitted. */}
+              {facts.length ? (
+                <section aria-labelledby="about-profile" className="flex flex-col gap-4">
+                  <h2 id="about-profile" className="font-label text-label text-fg-muted uppercase">
+                    {t('profile')}
+                  </h2>
+                  <dl className={facts.length > 1 ? 'matrix sm:grid-cols-2' : 'matrix'}>
+                    {facts.map(([term, value]) => (
+                      <div key={term} className="flex flex-col gap-2 p-5">
+                        <dt className="font-label text-label text-fg-muted uppercase">{term}</dt>
+                        <dd className="text-body text-fg-strong">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
+              ) : null}
               <RichText value={profile?.longBio} headingBase={2} className="text-lead" />
             </div>
           </div>
