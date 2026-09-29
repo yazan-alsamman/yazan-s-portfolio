@@ -1,6 +1,6 @@
 {
   "meta": {
-    "homeDescription": "Official website of {name}, {title}.",
+    "homeDescription": "Official website of {name}, {title}: intelligent systems, platform architecture and engineering case studies.",
     "notFoundTitle": "Page not found",
     "designSystemTitle": "Design system preview",
     "ogLocale": "en_US"
@@ -137,8 +137,12 @@
         "role": "Role",
         "education": "Education",
         "focus": "Focus",
-        "disciplines": "Disciplines"
-      }
+        "disciplines": "Disciplines",
+        "systems": "Selected systems",
+        "skills": "Verified skills"
+      },
+      "technologyCount": "{count, plural, one {# technology} other {# technologies}}",
+      "principles": "Engineering principles"
     },
     "projects": {
       "title": "Projects",
@@ -147,7 +151,12 @@
       "filter": "Filter by category",
       "all": "All",
       "count": "{count, plural, one {# project} other {# projects}}",
-      "view": "Read case study"
+      "view": "Read case study",
+      "evidenceFilter": "Filter by evidence",
+      "evidence": {
+        "verified": "Verified work",
+        "concept": "Concept systems"
+      }
     },
     "project": {
       "overview": "Overview",
@@ -166,7 +175,23 @@
       "video": "Watch the video",
       "related": "Related projects",
       "allProjects": "All projects",
-      "contactCta": "Discuss a project"
+      "contactCta": "Discuss a project",
+      "contents": "Contents",
+      "constraints": "Constraints",
+      "intelligence": "Intelligence layer",
+      "decisions": "Engineering decisions",
+      "challenges": "Challenges",
+      "designObjective": "Design objective",
+      "evidence": "Evidence",
+      "provenance": {
+        "verified": "Verified work",
+        "concept": "Concept system",
+        "experimental": "Experimental"
+      },
+      "concept": {
+        "title": "Concept system — not delivered work",
+        "body": "A design study of how this class of system should be engineered. It describes an intended architecture and design objectives; it claims no users, deployments or measured results."
+      }
     },
     "experience": {
       "title": "Experience",
@@ -181,13 +206,16 @@
       "evidence": "Demonstrated in",
       "layers": {
         "intelligence": "Intelligence",
-        "interfaces": "Interfaces",
-        "services": "Services",
+        "systems": "Systems & architecture",
+        "application": "Application engineering",
         "data": "Data",
-        "foundations": "Foundations",
         "infrastructure": "Infrastructure",
+        "discipline": "Engineering discipline",
         "adjacent": "Adjacent disciplines"
-      }
+      },
+      "certified": "Certificate",
+      "exploration": "Exploration",
+      "explorationLead": "Studied and designed in labelled concept systems — not presented as professional experience."
     },
     "certificates": {
       "title": "Certificates",
@@ -195,7 +223,8 @@
       "issued": "Issued",
       "credentialId": "Credential ID",
       "verify": "Verify at issuer",
-      "viewPdf": "View certificate"
+      "viewPdf": "View certificate",
+      "issuers": "Issuers"
     },
     "cv": {
       "title": "CV",
@@ -217,7 +246,7 @@
     "portfolio": {
       "introduction": "Introduction",
       "readMore": "More about {name}",
-      "selectedWork": "Selected work",
+      "selectedWork": "Selected systems",
       "allProjects": "All projects",
       "expertise": "Technical expertise",
       "allSkills": "All skills",
@@ -239,8 +268,16 @@
       "dossier": {
         "source": "Source",
         "figures": "{count, plural, one {# figure} other {# figures}}",
-        "schematic": "Schematic · no published imagery",
-        "documented": "Documented"
+        "schematic": "Architecture schematic · no published imagery",
+        "documented": "Documented",
+        "schematicConcept": "Conceptual system diagram · not a screenshot"
+      },
+      "concept": "Concept system",
+      "systemsMap": {
+        "title": "Systems map",
+        "lead": "Where each selected system sits in the expertise model, derived from the technologies recorded on its case study.",
+        "system": "System",
+        "present": "Yes"
       }
     },
     "categories": {
@@ -259,7 +296,10 @@
       "frontend": "Frontend",
       "devops-infrastructure": "DevOps & infrastructure",
       "databases": "Databases",
-      "tools": "Tools"
+      "tools": "Tools",
+      "architecture": "Architecture",
+      "security": "Security",
+      "practice": "Engineering practice"
     }
   }
 }

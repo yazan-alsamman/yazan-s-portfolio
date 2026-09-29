@@ -5,11 +5,17 @@ import type { ProjectDossier, ProjectSummary } from '@/content/types';
 import { cn } from '@/lib/cn';
 import { frameFit } from '@/lib/image-fit';
 
+const STACK_SHOWN = 6;
+
 /** Translated labels for the case-file facts (plain strings: the row also renders client-side). */
 export type CaseLabels = {
   stack: string;
   source: string;
   documented: string;
+  /** Badge for a concept system (Phase 14) — shown on every concept row. */
+  concept: string;
+  /** Concept projects document a design objective, not results. */
+  designObjective: string;
   /** "4 figures", keyed by count (ICU plural resolved on the server). */
   figures: Record<string, string>;
   sections: Record<ProjectDossier['sections'][number], string>;
@@ -44,12 +50,17 @@ export function ProjectRow({
 }) {
   const H = `h${headingLevel}` as const;
   const dossier = project.dossier;
+  const concept = project.provenance === 'concept';
   const facts: string[] = [];
   if (labels && dossier) {
     if (dossier.source) facts.push(labels.source);
     if (dossier.figures > 0) facts.push(labels.figures[String(dossier.figures)] ?? String(dossier.figures));
     if (dossier.sections.length)
-      facts.push(`${labels.documented}: ${dossier.sections.map((s) => labels.sections[s]).join(', ')}`);
+      facts.push(
+        `${labels.documented}: ${dossier.sections
+          .map((s) => (s === 'results' && concept ? labels.designObjective : labels.sections[s]))
+          .join(', ')}`,
+      );
   }
   return (
     <article
@@ -64,6 +75,13 @@ export function ProjectRow({
         </p>
         {categoryLabel ? (
           <p className="font-label text-label text-fg-muted uppercase">{categoryLabel}</p>
+        ) : null}
+        {concept && labels ? (
+          // Evidence status is text, not colour alone: concepts are named as such on every row.
+          <p className="inline-flex w-fit items-center gap-2 rounded-sm border border-dashed border-line-strong px-2 py-0.5 font-label text-label text-fg uppercase">
+            <span aria-hidden="true" className="size-1.5 rounded-full border border-accent" />
+            {labels.concept}
+          </p>
         ) : null}
         {dossier?.year ? (
           <p className="font-mono text-meta text-fg-muted tabular-nums">
@@ -86,7 +104,13 @@ export function ProjectRow({
             {labels ? <p className="font-label text-label text-fg-muted uppercase">{labels.stack}</p> : null}
             <ul className="flex flex-wrap items-baseline gap-x-3 gap-y-1 font-mono text-meta text-fg">
               {project.technologies.map((tech, i) => (
-                <li key={tech.id} dir="ltr" className="flex items-baseline gap-3">
+                // Rows stay scannable: the first STACK_SHOWN are visible, the rest remain in the
+                // accessibility tree (the full stack is on the project page, by layer).
+                <li
+                  key={tech.id}
+                  dir="ltr"
+                  className={cn('flex items-baseline gap-3', i >= STACK_SHOWN && 'sr-only')}
+                >
                   {i > 0 ? (
                     <span aria-hidden="true" className="text-fg-muted">
                       /
@@ -95,6 +119,11 @@ export function ProjectRow({
                   {tech.label ?? tech.name}
                 </li>
               ))}
+              {project.technologies.length > STACK_SHOWN ? (
+                <li aria-hidden="true" className="text-fg-muted">
+                  +{project.technologies.length - STACK_SHOWN}
+                </li>
+              ) : null}
             </ul>
           </div>
         ) : null}

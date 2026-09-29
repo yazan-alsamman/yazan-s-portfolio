@@ -1,6 +1,6 @@
 {
   "meta": {
-    "homeDescription": "الموقع الرسمي لـ{name}، {title}.",
+    "homeDescription": "الموقع الرسمي لـ{name}، {title}: أنظمة ذكية ومعمارية منصّات ودراسات حالة هندسية.",
     "notFoundTitle": "الصفحة غير موجودة",
     "designSystemTitle": "معاينة نظام التصميم",
     "ogLocale": "ar_AR"
@@ -137,8 +137,12 @@
         "role": "الدور",
         "education": "التعليم",
         "focus": "مجالات التركيز",
-        "disciplines": "التخصصات"
-      }
+        "disciplines": "التخصصات",
+        "systems": "أنظمة مختارة",
+        "skills": "مهارات موثّقة"
+      },
+      "technologyCount": "{count, plural, zero {لا تقنيات} one {تقنية واحدة} two {تقنيتان} few {# تقنيات} many {# تقنية} other {# تقنية}}",
+      "principles": "المبادئ الهندسية"
     },
     "projects": {
       "title": "المشاريع",
@@ -147,7 +151,12 @@
       "filter": "تصفية حسب الفئة",
       "all": "الكل",
       "count": "{count, plural, zero {لا مشاريع} one {مشروع واحد} two {مشروعان} few {# مشاريع} many {# مشروعاً} other {# مشروع}}",
-      "view": "قراءة دراسة الحالة"
+      "view": "قراءة دراسة الحالة",
+      "evidenceFilter": "تصفية حسب الدليل",
+      "evidence": {
+        "verified": "أعمال موثّقة",
+        "concept": "أنظمة مفاهيمية"
+      }
     },
     "project": {
       "overview": "نظرة عامة",
@@ -166,7 +175,23 @@
       "video": "مشاهدة الفيديو",
       "related": "مشاريع ذات صلة",
       "allProjects": "كل المشاريع",
-      "contactCta": "ناقش مشروعاً"
+      "contactCta": "ناقش مشروعاً",
+      "contents": "المحتويات",
+      "constraints": "القيود",
+      "intelligence": "طبقة الذكاء",
+      "decisions": "القرارات الهندسية",
+      "challenges": "التحديات",
+      "designObjective": "هدف التصميم",
+      "evidence": "الدليل",
+      "provenance": {
+        "verified": "عمل موثّق",
+        "concept": "نظام مفاهيمي",
+        "experimental": "تجريبي"
+      },
+      "concept": {
+        "title": "نظام مفاهيمي — ليس عملاً منجزاً",
+        "body": "دراسة تصميمية لكيفية هندسة هذا النوع من الأنظمة. تصف معمارية مقصودة وأهداف تصميم، ولا تدّعي مستخدمين أو عمليات نشر أو نتائج مقاسة."
+      }
     },
     "experience": {
       "title": "الخبرات",
@@ -181,13 +206,16 @@
       "evidence": "تظهر في",
       "layers": {
         "intelligence": "الذكاء",
-        "interfaces": "الواجهات",
-        "services": "الخدمات",
+        "systems": "الأنظمة والمعمارية",
+        "application": "هندسة التطبيقات",
         "data": "البيانات",
-        "foundations": "الأسس",
         "infrastructure": "البنية التحتية",
+        "discipline": "الانضباط الهندسي",
         "adjacent": "مجالات مجاورة"
-      }
+      },
+      "certified": "شهادة",
+      "exploration": "استكشاف",
+      "explorationLead": "مجالات دُرست وصُمّمت في أنظمة مفاهيمية موسومة — لا تُعرض كخبرة مهنية."
     },
     "certificates": {
       "title": "الشهادات",
@@ -195,7 +223,8 @@
       "issued": "تاريخ الإصدار",
       "credentialId": "رقم الشهادة",
       "verify": "التحقق لدى الجهة المانحة",
-      "viewPdf": "عرض الشهادة"
+      "viewPdf": "عرض الشهادة",
+      "issuers": "الجهات المانحة"
     },
     "cv": {
       "title": "السيرة الذاتية",
@@ -217,7 +246,7 @@
     "portfolio": {
       "introduction": "تعريف",
       "readMore": "المزيد عن {name}",
-      "selectedWork": "أعمال مختارة",
+      "selectedWork": "أنظمة مختارة",
       "allProjects": "كل المشاريع",
       "expertise": "الخبرات التقنية",
       "allSkills": "كل المهارات",
@@ -239,8 +268,16 @@
       "dossier": {
         "source": "الشيفرة المصدرية",
         "figures": "{count, plural, zero {لا أشكال} one {شكل واحد} two {شكلان} few {# أشكال} many {# شكلًا} other {# شكل}}",
-        "schematic": "مخطط توضيحي · لا توجد صور منشورة",
-        "documented": "موثّق"
+        "schematic": "مخطط معماري · لا توجد صور منشورة",
+        "documented": "موثّق",
+        "schematicConcept": "مخطط مفاهيمي للنظام · ليس لقطة شاشة"
+      },
+      "concept": "نظام مفاهيمي",
+      "systemsMap": {
+        "title": "خريطة الأنظمة",
+        "lead": "موقع كل نظام مختار في نموذج الخبرة، مستخلص من التقنيات المسجّلة في دراسة حالته.",
+        "system": "النظام",
+        "present": "نعم"
       }
     },
     "categories": {
@@ -259,7 +296,10 @@
       "frontend": "الواجهات الأمامية",
       "devops-infrastructure": "DevOps والبنية التحتية",
       "databases": "قواعد البيانات",
-      "tools": "الأدوات"
+      "tools": "الأدوات",
+      "architecture": "المعمارية",
+      "security": "الأمن",
+      "practice": "الممارسة الهندسية"
     }
   }
 }

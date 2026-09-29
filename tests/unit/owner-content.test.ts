@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  ownerAiSkills,
   ownerEducation,
   ownerExperience,
   ownerProfile,
+  ownerProjectTechnologies,
+  ownerShortBio,
+  ownerTechnologies,
   publishCertificatesWithoutFiles,
   publishWebCv,
 } from '@/cms/owner/owner-content';
@@ -52,5 +56,44 @@ describe('owner-confirmed content', () => {
 
   it('labels Instagram by name', () => {
     expect(socialLabel({ network: 'instagram', url: 'https://www.instagram.com/x' })).toBe('Instagram');
+  });
+});
+
+/** Phase 13 owner approvals (2026-09-29): only what the owner's published texts already state. */
+describe('owner-approved content authority (Phase 13)', () => {
+  it('positions the short bio on the confirmed title and role, without metrics', () => {
+    expect(ownerShortBio).toMatch(/^Artificial Intelligence Engineer and CTO at VegaCORE\./);
+    expect(ownerShortBio.length).toBeLessThanOrEqual(400); // Profile.shortBio maxLength
+    expect(ownerShortBio).not.toMatch(/\d/); // no numbers, percentages, counts or dates
+    expect(ownerShortBio).not.toMatch(/mobile and web applications/i);
+  });
+
+  it('adds exactly the six AI techniques named in project texts, each with a source', () => {
+    expect(ownerAiSkills.map((s) => s.name)).toEqual([
+      'Large language models',
+      'Neural networks',
+      'Fuzzy logic',
+      'FAISS vector retrieval',
+      'Expert systems',
+      'Algorithm design',
+    ]);
+    for (const s of [...ownerAiSkills, ...ownerTechnologies]) {
+      expect(s.source.length).toBeGreaterThan(10);
+      expect(s).not.toHaveProperty('proficiencyLabel'); // never a rating
+    }
+  });
+
+  it('links technologies only to the two projects whose texts name them', () => {
+    expect(Object.keys(ownerProjectTechnologies).sort()).toEqual([
+      'ai-intelligence-project-management-system',
+      'robot-obstacles-avoidance-system',
+    ]);
+    expect(ownerProjectTechnologies['robot-obstacles-avoidance-system']).toEqual([
+      'Fuzzy logic',
+      'Neural networks',
+    ]);
+    const known = new Set([...ownerAiSkills, ...ownerTechnologies].map((s) => s.name).concat('Flutter'));
+    for (const names of Object.values(ownerProjectTechnologies))
+      for (const n of names) expect(known.has(n)).toBe(true);
   });
 });

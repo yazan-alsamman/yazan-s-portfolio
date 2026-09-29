@@ -5,13 +5,29 @@
  * - `family` orders disciplines so intelligent systems lead (AI Engineer positioning, without
  *   adding or renaming any fact);
  * - `motif` picks the schematic drawn for a project that has no published imagery;
- * - `layer` places a skill category in the capability stack (a system architecture, bottom-up).
+ * - `layer` places a skill category in the technical expertise model (Phase 14).
  */
 
 export type Family = 'intelligent' | 'systems' | 'applications' | 'other';
-export type Motif = 'network' | 'vision' | 'kinematic' | 'modules' | 'device' | 'browser';
+export const MOTIFS = [
+  'network',
+  'vision',
+  'kinematic',
+  'modules',
+  'device',
+  'browser',
+  'pipeline',
+  'agents',
+  'events',
+  'tenancy',
+] as const;
+export type Motif = (typeof MOTIFS)[number];
+/**
+ * Technical expertise model (Phase 14): Intelligence → Systems → Application engineering → Data →
+ * Infrastructure → Engineering discipline, with adjacent disciplines set apart.
+ */
 export type Layer =
-  'intelligence' | 'interfaces' | 'services' | 'data' | 'infrastructure' | 'foundations' | 'adjacent';
+  'intelligence' | 'systems' | 'application' | 'data' | 'infrastructure' | 'discipline' | 'adjacent';
 
 const FAMILY: Record<string, Family> = {
   'artificial-intelligence': 'intelligent',
@@ -21,6 +37,7 @@ const FAMILY: Record<string, Family> = {
   robotics: 'intelligent',
   data: 'systems',
   'software-engineering': 'systems',
+  architecture: 'systems',
   backend: 'systems',
   databases: 'systems',
   'devops-infrastructure': 'systems',
@@ -48,15 +65,18 @@ const LAYER: Record<string, Layer> = {
   'machine-learning': 'intelligence',
   'computer-vision': 'intelligence',
   robotics: 'intelligence',
-  frontend: 'interfaces',
-  mobile: 'interfaces',
-  web: 'interfaces',
-  backend: 'services',
-  'software-engineering': 'services',
+  architecture: 'systems',
+  backend: 'systems',
+  'software-engineering': 'systems',
+  frontend: 'application',
+  mobile: 'application',
+  web: 'application',
+  programming: 'application',
   databases: 'data',
   data: 'data',
   'devops-infrastructure': 'infrastructure',
-  programming: 'foundations',
+  security: 'discipline',
+  practice: 'discipline',
   tools: 'adjacent',
   other: 'adjacent',
 };
@@ -66,16 +86,19 @@ const FAMILY_ORDER: readonly Family[] = ['intelligent', 'systems', 'applications
 /** Top of the stack first, like an architecture diagram; adjacent disciplines stand apart. */
 export const LAYER_ORDER: readonly Layer[] = [
   'intelligence',
-  'interfaces',
-  'services',
+  'systems',
+  'application',
   'data',
   'infrastructure',
-  'foundations',
+  'discipline',
   'adjacent',
 ];
 
 export const familyOf = (category: string | null): Family => (category && FAMILY[category]) || 'other';
-export const motifOf = (category: string | null): Motif => (category && MOTIF[category]) || 'modules';
+/** The CMS override (Phase 14 `schematic` field) wins; otherwise the category's motif. */
+export const motifOf = (category: string | null, override?: string | null): Motif =>
+  (override && (MOTIFS as readonly string[]).includes(override) ? (override as Motif) : null) ??
+  ((category && MOTIF[category]) || 'modules');
 export const layerOf = (category: string): Layer => LAYER[category] ?? 'adjacent';
 
 /**

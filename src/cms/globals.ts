@@ -51,6 +51,21 @@ export const Profile: GlobalConfig = {
       admin: { description: 'The About page exists only when this has text in that language.' },
     },
     {
+      name: 'principles',
+      label: 'Engineering principles',
+      type: 'array',
+      localized: true,
+      maxRows: 8,
+      admin: {
+        description:
+          'Short statements of how you engineer (About page). Principles, not achievements — no metrics or claims.',
+      },
+      fields: [
+        { name: 'title', type: 'text', required: true, maxLength: 60 },
+        { name: 'body', type: 'textarea', required: true, maxLength: 280 },
+      ],
+    },
+    {
       name: 'portrait',
       type: 'upload',
       relationTo: 'media',

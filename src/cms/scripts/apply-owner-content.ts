@@ -2,17 +2,24 @@
  * `pnpm cms:apply-owner` — applies the owner-confirmed decisions (src/cms/owner/owner-content.ts)
  * on top of the legacy migration. Idempotent. English only: no Arabic is written or approved.
  * Touches ONLY: Profile email + social links, the Experience entry (upsert by organization +
- * title), the Education correction, the certificates' publication, and the web CV.
- * Everything else (projects, biography, featured set, screenshots…) is left exactly as it is.
+ * title), the Education correction, the certificates' publication, and the web CV; and (Phase 13,
+ * owner-approved) the Profile short bio, the AI-technique and technology skills (create-only) and
+ * the technologies of two projects (existing links kept).
+ * Everything else (other projects, long biography, featured set, screenshots…) is left as it is.
  */
 import { getPayload } from 'payload';
 import config from '@payload-config';
 import { legacyCertificates } from '../legacy/legacy-content';
 import {
   OWNER_DECISIONS_DATE,
+  ownerAiSkills,
   ownerEducation,
   ownerExperience,
   ownerProfile,
+  ownerProjectTechnologies,
+  ownerShortBio,
+  ownerTechnologies,
+  PHASE13_DECISIONS_DATE,
   publishCertificatesWithoutFiles,
   publishWebCv,
 } from '../owner/owner-content';
@@ -160,6 +167,95 @@ if (publishWebCv) {
     overrideAccess: true,
   });
   done.push('cv: web CV published (no file)');
+}
+
+// ---- Phase 13 (owner-approved 2026-09-29): short bio, AI skills, project technologies ----------
+const note13 = (what: string) =>
+  `Owner-approved (${PHASE13_DECISIONS_DATE}, Phase 13): ${what}. docs/reports/PHASE_13_CONTENT_REVIEW.md`;
+
+await payload.updateGlobal({
+  slug: 'profile',
+  locale: 'en',
+  data: { shortBio: ownerShortBio, _status: 'published' },
+  overrideAccess: true,
+});
+done.push('profile: short bio (AI Engineer positioning)');
+
+// Skills: create-only (an existing skill of the same name is never overwritten).
+const skillIds = new Map<string, number>();
+for (const s of [...ownerAiSkills, ...ownerTechnologies]) {
+  const found = await payload.find({
+    collection: 'skills',
+    where: { name: { equals: s.name } },
+    locale: 'en',
+    draft: true,
+    limit: 1,
+    overrideAccess: true,
+  });
+  const existing = found.docs[0];
+  const id = existing
+    ? Number(existing.id)
+    : Number(
+        (
+          await payload.create({
+            collection: 'skills',
+            locale: 'en',
+            data: {
+              name: s.name,
+              category: s.category,
+              displayOrder: s.displayOrder,
+              translationStatus: 'approved',
+              sourceNote: note13(`named in ${s.source}`),
+              _status: 'published',
+            },
+            overrideAccess: true,
+          })
+        ).id,
+      );
+  skillIds.set(s.name, id);
+}
+done.push(`skills: ${ownerAiSkills.length} AI techniques + ${ownerTechnologies.length} technologies ensured`);
+
+// Project technologies: owner order first, then any links the project already had (none dropped).
+for (const [slug, names] of Object.entries(ownerProjectTechnologies)) {
+  const found = await payload.find({
+    collection: 'projects',
+    where: { slug: { equals: slug } },
+    locale: 'en',
+    draft: true,
+    depth: 0,
+    limit: 1,
+    overrideAccess: true,
+  });
+  const project = found.docs[0];
+  if (!project) throw new Error(`Project not found: ${slug} — run cms:import-legacy first.`);
+  const ids: number[] = [];
+  for (const name of names) {
+    let id = skillIds.get(name);
+    if (id === undefined) {
+      const s = await payload.find({
+        collection: 'skills',
+        where: { name: { equals: name } },
+        locale: 'en',
+        draft: true,
+        limit: 1,
+        overrideAccess: true,
+      });
+      if (!s.docs[0]) throw new Error(`Skill not found: ${name}`);
+      id = Number(s.docs[0].id);
+    }
+    ids.push(id);
+  }
+  const existing = (project.technologies ?? []).map((t) => Number(typeof t === 'object' ? t.id : t));
+  const technologies = [...ids, ...existing.filter((id) => !ids.includes(id))];
+  await payload.update({
+    collection: 'projects',
+    id: project.id,
+    locale: 'en',
+    data: { technologies, _status: 'published' },
+    overrideAccess: true,
+  });
+  done.push(`project ${slug}: ${technologies.length} technologies`);
 }
 
 payload.logger.info(`Owner content applied: ${done.join(' · ')}`);

@@ -14,6 +14,7 @@ import {
   ownerEducation,
   ownerExperience,
   ownerProfile,
+  ownerShortBio,
   publishCertificatesWithoutFiles,
   publishWebCv,
 } from '../owner/owner-content';
@@ -97,8 +98,10 @@ const profile = (await payload.findGlobal({
   depth: 0,
   overrideAccess: true,
 })) as unknown as Record<string, unknown>;
-if (profile.shortBio !== legacyProfile.shortBio)
-  errors.push('profile short bio differs from the legacy text');
+// The short bio is owner-approved text since Phase 13 (the owner wins over the legacy site).
+if (profile.shortBio !== ownerShortBio && profile.shortBio !== legacyProfile.shortBio)
+  errors.push('profile short bio is neither the owner-approved nor the legacy text');
+if (profile.shortBio !== ownerShortBio) errors.push('owner-approved short bio not applied (cms:apply-owner)');
 
 // Owner-confirmed layer (src/cms/owner/owner-content.ts, `pnpm cms:apply-owner`).
 const socials = (profile.socialLinks as { network: string; url: string }[] | undefined) ?? [];

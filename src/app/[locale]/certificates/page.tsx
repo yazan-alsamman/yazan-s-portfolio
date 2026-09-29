@@ -26,12 +26,37 @@ export default async function CertificatesPage({ params }: Props) {
     pageIdentity(locale),
     getCertificates(locale),
   ]);
+  const issuers = [
+    ...items.reduce((m, c) => m.set(c.issuer, (m.get(c.issuer) ?? 0) + 1), new Map<string, number>()),
+  ];
 
   return (
     <>
       <PageIntro label={identity.name} title={t('title')} />
       {available ? (
-        <Container className="pb-24 md:pb-32">
+        <Container className="flex flex-col gap-12 pb-24 md:pb-32">
+          {/* Issuer index (Phase 13): the register's structure at a glance — jump links with counts,
+              in the same order and ids as the grouped register below. */}
+          {issuers.length > 1 ? (
+            <nav aria-label={t('issuers')} className="flex flex-col gap-3">
+              <p className="font-label text-label text-fg-muted uppercase">{t('issuers')}</p>
+              <ul className="flex flex-wrap gap-2">
+                {issuers.map(([issuer, count], gi) => (
+                  <li key={issuer}>
+                    <a
+                      href={`#issuer-${gi}`}
+                      className="inline-flex min-h-11 items-center gap-2.5 rounded-sm border border-line-strong px-4 font-label text-sm text-fg-muted transition-colors duration-(--duration-base) ease-standard hover:border-fg hover:text-fg"
+                    >
+                      {issuer}
+                      <span aria-hidden="true" className="font-mono text-meta tabular-nums">
+                        {String(count).padStart(2, '0')}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ) : null}
           <CertificateList
             items={items}
             locale={locale}

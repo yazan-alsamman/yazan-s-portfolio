@@ -20,7 +20,7 @@ import { OWNER_INPUT_PLACEHOLDER } from '@/i18n/messages';
 import { Container, Section } from '@/components/ui/layout';
 import { Label } from '@/components/ui/typography';
 import { ButtonLink } from '@/components/ui/actions';
-import { orderedDisciplines } from '@/lib/disciplines';
+import { LAYER_ORDER, layerOf, orderedDisciplines } from '@/lib/disciplines';
 import { DevPlaceholder } from '@/components/shell/DevPlaceholder';
 import { HomeSections } from '@/components/portfolio/HomeSections';
 import { CinematicStage } from '@/components/cinematic/CinematicStage';
@@ -133,6 +133,14 @@ export default async function HomePage({ params }: Props) {
                 entityName: entity.name,
                 jobTitle: title,
                 sameAs: (profile?.socialLinks ?? []).map((l) => l.url),
+                // Published skills, intelligence layer first (CMS data; English entity facts).
+                knowsAbout: skills
+                  .filter((s) => s.provenance !== 'exploration')
+                  .sort(
+                    (a, b) =>
+                      LAYER_ORDER.indexOf(layerOf(a.category)) - LAYER_ORDER.indexOf(layerOf(b.category)),
+                  )
+                  .map((s) => s.label ?? s.name),
                 siteDescription: seo.description,
               }),
             ),
