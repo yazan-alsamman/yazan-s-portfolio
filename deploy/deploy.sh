@@ -9,6 +9,13 @@
 set -eu
 
 cd "$(dirname "$0")/.."
+
+# Pull the latest code first, then re-run the (possibly updated) script so the rest of it is the new version.
+if [ "${1:-}" != rollback ] && [ -z "${DEPLOY_PULLED:-}" ]; then
+  git pull --ff-only
+  DEPLOY_PULLED=1 exec sh deploy/deploy.sh "$@"
+fi
+
 # ENV_FILE / COMPOSE_PROJECT_NAME may be overridden for a rehearsal on another host (Phase 9 dry run).
 ENV_FILE=${ENV_FILE:-deploy/.env.production}
 COMPOSE="docker compose --env-file $ENV_FILE -f deploy/docker-compose.prod.yml"
